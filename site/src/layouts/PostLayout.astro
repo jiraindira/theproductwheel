@@ -1,0 +1,82 @@
+---
+const { title, description, publishedAt, category, audience } = Astro.props;
+
+const dateLabel =
+  publishedAt instanceof Date
+    ? publishedAt.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
+    : (publishedAt ? String(publishedAt) : "—");
+
+const categoryLabel = String(category).replaceAll("_", " ");
+---
+
+<section class="bg-white rounded-2xl shadow-sm border p-8">
+  <div class="max-w-3xl">
+    <p class="text-sm text-gray-500 mb-3">
+      {dateLabel} · <span class="capitalize">{categoryLabel}</span>
+    </p>
+
+    <h1 class="text-4xl md:text-5xl font-semibold tracking-tight leading-tight">
+      {title}
+    </h1>
+
+    <p class="mt-4 text-lg text-gray-600">
+      {description}
+    </p>
+
+    <div class="mt-6 flex flex-wrap gap-3">
+      <span class="text-xs bg-gray-100 border rounded-full px-3 py-1 text-gray-700 max-w-full">
+        Audience: {audience}
+      </span>
+      <span class="text-xs bg-gray-100 border rounded-full px-3 py-1 text-gray-700">
+        Updated weekly
+      </span>
+      <span class="text-xs bg-gray-100 border rounded-full px-3 py-1 text-gray-700">
+        High-rating picks
+      </span>
+    </div>
+  </div>
+</section>
+
+<section class="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
+  <!-- Main article -->
+  <article class="lg:col-span-8">
+    <div class="bg-white rounded-2xl shadow-sm border p-8">
+      <div class="prose-premium">
+        <slot />
+      </div>
+    </div>
+
+    <!-- Trust / disclosure -->
+    <div class="mt-6 text-sm text-gray-600 bg-white rounded-2xl border p-6">
+      <p class="font-semibold text-gray-800 mb-1">Affiliate disclosure</p>
+      <p>
+        Some links may be affiliate links. If you buy through them, we may earn a commission at no extra cost to you.
+        We only include items that meet our quality thresholds.
+      </p>
+    </div>
+  </article>
+
+  <!-- Sidebar -->
+  <aside class="lg:col-span-4">
+    <div class="bg-white rounded-2xl shadow-sm border p-6 sticky top-6">
+      <p class="font-semibold mb-3">Quick take</p>
+      <ul class="text-sm text-gray-700 space-y-2">
+        <li>Curated for: <span class="font-medium">{audience}</span></li>
+        <li>Category: <span class="font-medium">{categoryLabel}</span></li>
+        <li>Focus: <span class="font-medium">high-rated + widely reviewed</span></li>
+      </ul>
+
+      <div class="mt-6">
+        <a
+          href="#top-picks"
+          class="block w-full text-center bg-blue-600 text-white font-medium py-3 rounded-xl hover:bg-blue-700 transition"
+        >
+          Jump to Top Picks
+        </a>
+        <p class="text-xs text-gray-500 mt-3">
+          Tip: scan the list first, then read the rationale if you want the “why”.
+        </p>
+      </div>
+    </div>
+  </aside>
+</section>

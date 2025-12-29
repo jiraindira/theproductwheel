@@ -1,0 +1,73 @@
+---
+import "../styles/global.css";
+import { getTaxonomy } from "../lib/taxonomy";
+
+const taxonomy = await getTaxonomy();
+
+const {
+  title = taxonomy.brand.name,
+  description = taxonomy.brand.tagline,
+  canonical, // optional relative or absolute
+} = Astro.props;
+
+const canonicalUrl = canonical
+  ? new URL(canonical, Astro.site ?? "http://localhost").toString()
+  : (Astro.url ? Astro.url.toString() : undefined);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    {canonicalUrl ? <link rel="canonical" href={canonicalUrl} /> : null}
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    {canonicalUrl ? <meta property="og:url" content={canonicalUrl} /> : null}
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <slot name="head" />
+  </head>
+
+  <body class="bg-gray-50 text-gray-900">
+    <header class="bg-white border-b">
+      <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-3">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-gray-50">
+            <svg viewBox="0 0 24 24" class="h-5 w-5 text-gray-800" aria-hidden="true">
+              <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8" />
+              <circle cx="12" cy="12" r="2" fill="currentColor" />
+              <path d="M12 4v2M20 12h-2M12 20v-2M4 12h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+          </span>
+
+          <span class="leading-tight">
+            <span class="block font-bold tracking-tight text-lg">{taxonomy.brand.name}</span>
+            <span class="block text-xs text-gray-500">{taxonomy.brand.tagline}</span>
+          </span>
+        </a>
+
+        <nav class="flex items-center gap-4 text-sm">
+          <a href="/posts" class="text-gray-600 hover:text-gray-900 font-semibold">Guides</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="mt-16 border-t bg-white">
+      <div class="max-w-6xl mx-auto px-6 py-10 text-sm text-gray-500">
+        © {new Date().getFullYear()} {taxonomy.brand.name} · Independent product recommendations
+      </div>
+    </footer>
+  </body>
+</html>

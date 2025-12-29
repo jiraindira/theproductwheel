@@ -4,15 +4,62 @@ from schemas.topic import TopicInput
 from datetime import date
 from pathlib import Path
 import json
-import subprocess
 import re
+
+
+ASTRO_POSTS_DIR = Path("site/src/content/posts")
+LOG_PATH = Path("output/posts_log.json")
+
+
+def slugify(text: str) -> str:
+    # Lowercase, replace spaces with hyphens, remove unsafe characters
+    text = text.lower().strip()
+    text = re.sub(r"\s+", "-", text)
+    text = re.sub(r"[^a-z0-9\-]", "", text)
+    text = re.sub(r"-{2,}", "-", text)
+    return text.strip("-")
+
+
+NORMALIZE_TRANSLATION_TABLE = str.maketrans({
+    "’": "'",
+    "“": '"',
+    "”": '"',
+    "–": "-",
+    "—": "-",
+})
+
+
+def normalize_text(s: str) -> str:
+    return s.translate(NORMALIZE_TRANSLATION_TABLE)
+
+
+def ensure_log_file():
+    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    if not LOG_PATH.exists():
+        LOG_PATH.write_text("[]", encoding="utf-8")
+
+
+def append_log(entry: dict):
+    ensure_log_file()
+    try:
+        data = json.loads(LOG_PATH.read_text(encoding="utf-8"))
+        if not isinstance(data, list):
+            data = []
+    except Exception:
+        data = []
+    data.append(entry)
+    LOG_PATH.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
 
 def main():
     print(">>> generate_blog_post.py started")
 
-    # 1️⃣ Generate Topic
+    ASTRO_POSTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    # 1) Topic
     topic_agent = TopicSelectionAgent()
     input_data = TopicInput(current_date=date.today().isoformat(), region="US")
+
     try:
         topic = topic_agent.run(input_data)
         print("✅ Topic generated:", topic.topic)
@@ -20,91 +67,81 @@ def main():
         print("Error generating topic:", e)
         return
 
-    # 2️⃣ Generate Products
+    # 2) Products
     product_agent = ProductDiscoveryAgent()
     try:
-        products = product_agent.run(topic)
-        print(f"✅ {len(products)} products generated")
+        product_models = product_agent.run(topic)  # list[Product]
+        print(f"✅ {len(product_models)} products generated")
     except Exception as e:
         print("Error generating products:", e)
         return
 
-    # 3️⃣ Filter & sort products
-    products = [p for p in products if p.rating >= 4.0 and p.reviews_count >= 250]
-    products = sorted(products, key=lambda p: (p.rating, p.reviews_count), reverse=True)
+    # 3) Filter + normalize + convert to JSON-safe dicts
+            "url": str(p.url),  # IMPORTANT: HttpUrl -> str for YAML frontmatter (markdown) serialization
+        {
+            "title": normalize_text(p.title),
+            "url": str(p.url),  # IMPORTANT: HttpUrl -> str for JSON/YAML safety
+            "price": p.price,
+            "rating": float(p.rating),
+            "reviews_count": int(p.reviews_count),
+            "description": normalize_text(p.description),
+        }
+        for p in product_models
+        if p.rating >= 4.0 and p.reviews_count >= 250
+    ]
 
-    # 4️⃣ Generate Markdown with Jekyll front-matter
-    # Sanitize filename for Windows and Git
-    safe_topic = re.sub(r"[^\w\-]", "-", topic.topic.replace(" ", "-"))
-    filename = f"{date.today().isoformat()}-{safe_topic}.md"
+    # Sort dicts (not pydantic models)
+    products = sorted(
+        products,
+        key=lambda p: (p.get("rating", 0), p.get("reviews_count", 0)),
+        reverse=True
+    )
 
-    output_path = Path("_posts")
-    output_path.mkdir(exist_ok=True)
-    file_path = output_path / filename
+    if len(products) < 5:
+        print("⚠️ Warning: fewer than 5 products passed filters.")
 
-    md_content = f"""---
-layout: post
-title: "{topic.topic}"
-date: {date.today().isoformat()}
-categories: {topic.category}
-audience: {topic.audience}
----
+    # 4) File naming
+    post_date = date.today().isoformat()
+    slug = slugify(topic.topic)
+    filename = f"{post_date}-{slug}.md"
+    file_path = ASTRO_POSTS_DIR / filename
 
-# {topic.topic}
+    # 5) Frontmatter must match site/src/content/config.ts
+    # Schema requires: title, description, publishedAt, category, audience, products
+    meta_description = f"Curated {topic.category.replace('_', ' ')} picks for {normalize_text(topic.audience)}."
 
-*Audience:* {topic.audience}  
-*Category:* {topic.category}  
-*Rationale:* {topic.rationale}
+    md = []
+    md.append("---")
+    md.append(f'title: "{normalize_text(topic.topic)}"')
+    md.append(f'description: "{meta_description}"')
+    md.append(f"publishedAt: {post_date}")
+    md.append(f'category: "{topic.category}"')
+    md.append(f'audience: "{normalize_text(topic.audience)}"')
+    # Embed products as JSON inside YAML (valid YAML)
+    md.append(f"products: {json.dumps(products, ensure_ascii=False)}")
+    md.append("---")
+    md.append("")
+    md.append("## Why this list")
+    md.append("")
+    md.append(normalize_text(topic.rationale).strip())
+    md.append("")
+    # IMPORTANT: Do NOT render products in Markdown anymore if Astro renders cards from frontmatter.
+    # Leaving the section out prevents duplication.
 
-## Top Products:
+    file_path.write_text("\n".join(md), encoding="utf-8")
+    print(f"✅ Astro post saved to {file_path}")
 
-"""
-    for idx, p in enumerate(products, start=1):
-        md_content += f"""### {idx}. {p.title}
-- Price: {p.price}
-- Rating: {p.rating}⭐ ({p.reviews_count} reviews)
-- Link: {p.url}
-- Description: {p.description}
-
-"""
-
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write(md_content)
-    print(f"✅ Blog post saved to {file_path}")
-
-    # 5️⃣ Log post
-    log_path = Path("output/posts_log.json")
-    log_path.parent.mkdir(exist_ok=True)
-    if log_path.exists():
-        try:
-            log_data = json.loads(log_path.read_text(encoding="utf-8"))
-        except Exception:
-            log_data = []
-    else:
-        log_data = []
-
-    log_entry = {
-        "date": date.today().isoformat(),
-        "topic": topic.topic,
+    # 6) Log
+    append_log({
+        "date": post_date,
+        "title": normalize_text(topic.topic),
         "category": topic.category,
-        "filename": str(file_path)
-    }
-    log_data.append(log_entry)
-    log_path.write_text(json.dumps(log_data, indent=2), encoding="utf-8")
-    print(f"✅ Post logged in {log_path}")
+        "audience": normalize_text(topic.audience),
+        "file": str(file_path).replace("\\", "/"),
+        "product_count": len(products),
+    })
+    print(f"✅ Post logged in {LOG_PATH}")
 
-    # 6️⃣ Git commit & push
-    try:
-        # Force-add the generated blog post and log file
-        subprocess.run(["git", "add", "-f", str(file_path)], check=True)
-        subprocess.run(["git", "add", "-f", str(log_path)], check=True)
-
-        commit_message = f"Add blog post: {topic.topic} ({date.today().isoformat()})"
-        subprocess.run(["git", "commit", "-m", commit_message], check=True)
-        subprocess.run(["git", "push", "origin", "main"], check=True)
-        print(f"✅ Blog post pushed to GitHub")
-    except subprocess.CalledProcessError as e:
-        print(f"⚠️ Git push failed: {e}")
 
 if __name__ == "__main__":
     main()

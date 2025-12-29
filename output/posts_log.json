@@ -34,5 +34,44 @@
     "topic": "Top 7 Cozy Outdoor Gear Gifts for Winter Adventures in 2025",
     "category": "outdoors_and_travel",
     "filename": "_posts\\2025-12-23-Top-7-Cozy-Outdoor-Gear-Gifts-for-Winter-Adventures-in-2025.md"
+  },
+  {
+    "date": "2025-12-23",
+    "title": "Top Cozy and Stylish Winter Skincare Gifts for Men in 2025",
+    "category": "beauty_and_grooming",
+    "audience": "Men looking for effective winter skincare solutions and gift buyers seeking practical grooming presents",
+    "file": "site/src/content/posts/2025-12-23-top-cozy-and-stylish-winter-skincare-gifts-for-men-in-2025.md"
+  },
+  {
+    "date": "2025-12-23",
+    "title": "Top Cozy and Practical Gifts for New Parents This Winter",
+    "category": "parenting_and_family",
+    "audience": "New and expecting parents looking for thoughtful winter gift ideas",
+    "file": "site/src/content/posts/2025-12-23-top-cozy-and-practical-gifts-for-new-parents-this-winter.md",
+    "product_count": 8
+  },
+  {
+    "date": "2025-12-23",
+    "title": "Top Cozy Indoor Plants to Gift This Winter for Health and Home",
+    "category": "home_and_kitchen",
+    "audience": "US-based indoor plant enthusiasts and gift shoppers looking for unique winter presents",
+    "file": "site/src/content/posts/2025-12-23-top-cozy-indoor-plants-to-gift-this-winter-for-health-and-home.md",
+    "product_count": 7
+  },
+  {
+    "date": "2025-12-24",
+    "title": "Top Cozy Outdoor Gear Gifts for Winter Adventures in 2025",
+    "category": "outdoors_and_travel",
+    "audience": "Outdoor enthusiasts and gift shoppers looking for winter adventure gear",
+    "file": "site/src/content/posts/2025-12-24-top-cozy-outdoor-gear-gifts-for-winter-adventures-in-2025.md",
+    "product_count": 8
+  },
+  {
+    "date": "2025-12-29",
+    "title": "Top Cozy and Stylish Winter Skincare Gift Sets for 2026",
+    "category": "beauty_and_grooming",
+    "audience": "Gift shoppers and skincare enthusiasts looking for winter skincare solutions",
+    "file": "site/src/content/posts/2025-12-29-top-cozy-and-stylish-winter-skincare-gift-sets-for-2026.md",
+    "product_count": 7
   }
 ]

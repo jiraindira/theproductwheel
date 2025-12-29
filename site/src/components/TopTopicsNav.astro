@@ -1,0 +1,25 @@
+---
+const { items = [], active = "all" } = Astro.props;
+// items: [{ key, label, href, count }]
+---
+
+<nav>
+  <div class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+    {items.map((it) => (
+      <a
+        href={it.href}
+        class:list={[
+          "font-bold tracking-tight hover:text-blue-700",
+          active === it.key ? "text-blue-700" : "text-gray-900",
+        ]}
+      >
+        {it.label}
+        {typeof it.count === "number" ? (
+          <span class="ml-1 text-gray-400 font-semibold">({it.count})</span>
+        ) : null}
+      </a>
+    ))}
+  </div>
+
+  <hr class="mt-5 border-t-2 border-gray-900/25" />
+</nav>
