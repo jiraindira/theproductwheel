@@ -3,6 +3,7 @@ import SiteLayout from "../layouts/SiteLayout.astro";
 import FeaturedGuide from "../components/FeaturedGuide.astro";
 import LatestList from "../components/LatestList.astro";
 import TopTopicsNav from "../components/TopTopicsNav.astro";
+import GuideCard from "../components/GuideCard.astro";
 import { getCollection } from "astro:content";
 import { getTaxonomy } from "../lib/taxonomy";
 
@@ -11,7 +12,9 @@ const taxonomy = await getTaxonomy();
 const posts = await getCollection("posts");
 posts.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 
-const featured = posts[0];
+const featured = posts.slice(0, 3);
+const featuredPrimary = featured[0];
+const featuredSecondary = featured.slice(1);
 const latestList = posts.slice(0, 6);
 
 // Build nav items from taxonomy (no hardcoding)
@@ -64,8 +67,27 @@ const hp = taxonomy.homepage ?? {
 
         <!-- CENTER: Featured -->
         <div class="order-1 lg:order-2">
-          {featured ? (
-            <FeaturedGuide post={featured} taxonomy={taxonomy} />
+          {featuredPrimary ? (
+            <div>
+              <FeaturedGuide post={featuredPrimary} taxonomy={taxonomy} />
+
+              {featuredSecondary.length ? (
+                <div class="mt-10 grid gap-6 sm:grid-cols-2">
+                  {featuredSecondary.slice(0, 2).map((post) => (
+                    <GuideCard
+                      href={`/posts/${post.slug}`}
+                      title={post.data.title}
+                      description={post.data.description}
+                      category={post.data.category}
+                      publishedAt={post.data.publishedAt}
+                      products={post.data.products}
+                      heroImage={post.data.heroImage}
+                      heroAlt={post.data.heroAlt}
+                    />
+                  ))}
+                </div>
+              ) : null}
+            </div>
           ) : (
             <div class="rounded-3xl border border-dashed border-gray-300 bg-white p-12">
               <h1 class="text-2xl font-semibold text-gray-900">No guides yet</h1>

@@ -1,7 +1,9 @@
 ---
 import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import ProductListItem from "../../components/ProductListItem.astro";
+import { getPostHeroImage } from "../../lib/postImages";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -40,14 +42,32 @@ const dateLabel = publishedAt ? formatDate(publishedAt) : "";
 const categoryLabel = category ? prettyCategory(category) : "";
 
 // sidebar list should match the rendered cards
-const picks = products; // keep all; or change to products.slice(0, 8) if you want a cap
+const picks = products;
+
+// HERO: support both public URLs and src/assets paths
+const heroImageRaw = post?.data?.heroImage;
+const heroAlt = post?.data?.heroAlt ?? post?.data?.title ?? "";
+
+const isPublicHero =
+  typeof heroImageRaw === "string" && heroImageRaw.startsWith("/");
+
+const heroAsset =
+  !isPublicHero && heroImageRaw ? getPostHeroImage(heroImageRaw) : null;
+
+// SEO / sharing
+const canonical = `/posts/${post.slug}`;
+const ogImage = typeof heroImageRaw === "string" && heroImageRaw.length > 0 ? heroImageRaw : undefined;
 ---
 
-<SiteLayout title={post.data.title} description={post.data.description}>
+<SiteLayout
+  title={post.data.title}
+  description={post.data.description}
+  canonical={canonical}
+  ogImage={ogImage}
+>
   <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
     <!-- HERO -->
     <header class="max-w-none w-full">
-
       <div class="text-xs text-gray-500">
         {dateLabel}
         {categoryLabel ? <span> · {categoryLabel}</span> : null}
@@ -62,6 +82,49 @@ const picks = products; // keep all; or change to products.slice(0, 8) if you wa
           {post.data.description}
         </p>
       )}
+
+      {(isPublicHero || heroAsset) ? (
+        <div class="mt-8">
+          <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+            {isPublicHero ? (
+              <img
+                src={heroImageRaw}
+                alt={heroAlt}
+                loading="eager"
+                decoding="async"
+                class="h-auto w-full object-cover"
+              />
+            ) : (
+              <Image
+                src={heroAsset}
+                alt={heroAlt}
+                width={heroAsset.width}
+                height={heroAsset.height}
+                class="h-auto w-full object-cover"
+                sizes="(min-width: 1024px) 960px, 100vw"
+                loading="eager"
+                decoding="async"
+              />
+            )}
+          </div>
+
+          {post.data.imageCreditName ? (
+            <div class="mt-2 text-xs text-gray-500">
+              Image credit:{" "}
+              {post.data.imageCreditUrl ? (
+                <a
+                  href={post.data.imageCreditUrl}
+                  class="underline underline-offset-2 hover:text-gray-700"
+                >
+                  {post.data.imageCreditName}
+                </a>
+              ) : (
+                <span>{post.data.imageCreditName}</span>
+              )}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </header>
 
     <!-- HR -->
@@ -114,9 +177,14 @@ const picks = products; // keep all; or change to products.slice(0, 8) if you wa
                   {idx + 1}. {p.title}
                 </a>
                 <div class="mt-1 text-xs text-gray-500">
-                  {typeof p.rating === "number" ? <span>{p.rating.toFixed(1)}★</span> : null}
+                  {typeof p.rating === "number" ? (
+                    <span>{p.rating.toFixed(1)}★</span>
+                  ) : null}
                   {typeof p.reviews_count === "number" ? (
-                    <span>{typeof p.rating === "number" ? " · " : ""}{p.reviews_count.toLocaleString()} reviews</span>
+                    <span>
+                      {typeof p.rating === "number" ? " · " : ""}
+                      {p.reviews_count.toLocaleString()} reviews
+                    </span>
                   ) : null}
                 </div>
               </li>
@@ -124,7 +192,10 @@ const picks = products; // keep all; or change to products.slice(0, 8) if you wa
           </ol>
 
           <div class="mt-6">
-            <a href="#picks" class="text-sm font-semibold text-blue-600 hover:text-blue-700">
+            <a
+              href="#picks"
+              class="text-sm font-semibold text-blue-600 hover:text-blue-700"
+            >
               Jump to list →
             </a>
           </div>

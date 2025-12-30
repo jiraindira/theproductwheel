@@ -9,9 +9,14 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    publishedAt: z.date(),
+    publishedAt: z.coerce.date(),
     category: z.string(),
     audience: z.string(),
+
+    heroImage: z.string(),
+    heroAlt: z.string(),
+    imageCreditName: z.string().optional(),
+    imageCreditUrl: z.string().url().optional(),
 
     products: z.array(
       z.object({
@@ -25,8 +30,7 @@ const posts = defineCollection({
     ),
 
     // Optional future-proofing
-    updatedAt: z.date().optional(),
-    heroImage: z.string().optional(),
+    updatedAt: z.coerce.date().optional(),
   }),
 });
 

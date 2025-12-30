@@ -8,11 +8,17 @@ const {
   title = taxonomy.brand.name,
   description = taxonomy.brand.tagline,
   canonical, // optional relative or absolute
+  ogImage, // optional absolute or relative URL to an image (e.g. /og/my-post.png or https://...)
 } = Astro.props;
 
 const canonicalUrl = canonical
   ? new URL(canonical, Astro.site ?? "http://localhost").toString()
   : (Astro.url ? Astro.url.toString() : undefined);
+
+const ogImageUrl =
+  typeof ogImage === "string" && ogImage.length > 0
+    ? new URL(ogImage, Astro.site ?? "http://localhost").toString()
+    : undefined;
 ---
 
 <html lang="en">
@@ -24,14 +30,17 @@ const canonicalUrl = canonical
 
     {canonicalUrl ? <link rel="canonical" href={canonicalUrl} /> : null}
 
+    <meta property="og:site_name" content={taxonomy.brand.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     {canonicalUrl ? <meta property="og:url" content={canonicalUrl} /> : null}
+    {ogImageUrl ? <meta property="og:image" content={ogImageUrl} /> : null}
 
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    {ogImageUrl ? <meta name="twitter:image" content={ogImageUrl} /> : null}
 
     <slot name="head" />
   </head>

@@ -1,10 +1,39 @@
 ---
-const { title, description, publishedAt, category, audience } = Astro.props;
+import { Image } from "astro:assets";
+import { getPostHeroImage } from "../lib/postImages";
+
+const {
+  title,
+  description,
+  publishedAt,
+  category,
+  audience,
+  heroImage,
+  heroAlt,
+  imageCreditName,
+  imageCreditUrl,
+} = Astro.props;
+
+// Detect whether heroImage is a public URL (/images/...) or an asset path
+const isPublicHero =
+  typeof heroImage === "string" && heroImage.startsWith("/");
+
+// Only resolve asset images via astro:assets
+const heroAsset =
+  !isPublicHero && heroImage ? getPostHeroImage(heroImage) : null;
+
+const safeHeroAlt = heroAlt ?? title;
 
 const dateLabel =
   publishedAt instanceof Date
-    ? publishedAt.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
-    : (publishedAt ? String(publishedAt) : "—");
+    ? publishedAt.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : publishedAt
+    ? String(publishedAt)
+    : "—";
 
 const categoryLabel = String(category).replaceAll("_", " ");
 ---
@@ -37,6 +66,49 @@ const categoryLabel = String(category).replaceAll("_", " ");
   </div>
 </section>
 
+{(isPublicHero || heroAsset) && (
+  <div class="mt-8">
+    <div class="overflow-hidden rounded-2xl border bg-white">
+      {isPublicHero ? (
+        <img
+          src={heroImage}
+          alt={safeHeroAlt}
+          loading="eager"
+          decoding="async"
+          class="w-full h-auto object-cover"
+        />
+      ) : (
+        <Image
+          src={heroAsset}
+          alt={safeHeroAlt}
+          width={heroAsset.width}
+          height={heroAsset.height}
+          class="w-full h-auto object-cover"
+          sizes="(min-width: 1024px) 960px, 100vw"
+          loading="eager"
+          decoding="async"
+        />
+      )}
+    </div>
+
+    {imageCreditName && (
+      <div class="mt-2 text-xs text-gray-500">
+        Image credit:{" "}
+        {imageCreditUrl ? (
+          <a
+            href={imageCreditUrl}
+            class="underline underline-offset-2 hover:text-gray-700"
+          >
+            {imageCreditName}
+          </a>
+        ) : (
+          <span>{imageCreditName}</span>
+        )}
+      </div>
+    )}
+  </div>
+)}
+
 <section class="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
   <!-- Main article -->
   <article class="lg:col-span-8">
@@ -50,33 +122,43 @@ const categoryLabel = String(category).replaceAll("_", " ");
     <div class="mt-6 text-sm text-gray-600 bg-white rounded-2xl border p-6">
       <p class="font-semibold text-gray-800 mb-1">Affiliate disclosure</p>
       <p>
-        Some links may be affiliate links. If you buy through them, we may earn a commission at no extra cost to you.
-        We only include items that meet our quality thresholds.
+        Some links may be affiliate links. If you buy through them, we may earn a
+        commission at no extra cost to you. We only include items that meet our
+        quality thresholds.
       </p>
     </div>
   </article>
 
   <!-- Sidebar -->
   <aside class="lg:col-span-4">
-    <div class="bg-white rounded-2xl shadow-sm border p-6 sticky top-6">
-      <p class="font-semibold mb-3">Quick take</p>
-      <ul class="text-sm text-gray-700 space-y-2">
-        <li>Curated for: <span class="font-medium">{audience}</span></li>
-        <li>Category: <span class="font-medium">{categoryLabel}</span></li>
-        <li>Focus: <span class="font-medium">high-rated + widely reviewed</span></li>
-      </ul>
+    <slot name="sidebar">
+      <div class="bg-white rounded-2xl shadow-sm border p-6 sticky top-6">
+        <p class="font-semibold mb-3">Quick take</p>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>
+            Curated for: <span class="font-medium">{audience}</span>
+          </li>
+          <li>
+            Category: <span class="font-medium">{categoryLabel}</span>
+          </li>
+          <li>
+            Focus: <span class="font-medium">high-rated + widely reviewed</span>
+          </li>
+        </ul>
 
-      <div class="mt-6">
-        <a
-          href="#top-picks"
-          class="block w-full text-center bg-blue-600 text-white font-medium py-3 rounded-xl hover:bg-blue-700 transition"
-        >
-          Jump to Top Picks
-        </a>
-        <p class="text-xs text-gray-500 mt-3">
-          Tip: scan the list first, then read the rationale if you want the “why”.
-        </p>
+        <div class="mt-6">
+          <a
+            href="#top-picks"
+            class="block w-full text-center bg-blue-600 text-white font-medium py-3 rounded-xl hover:bg-blue-700 transition"
+          >
+            Jump to Top Picks
+          </a>
+          <p class="text-xs text-gray-500 mt-3">
+            Tip: scan the list first, then read the rationale if you want the
+            “why”.
+          </p>
+        </div>
       </div>
-    </div>
+    </slot>
   </aside>
 </section>

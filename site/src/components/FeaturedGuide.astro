@@ -1,6 +1,8 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
 import { groupForCategory, prettyCategory } from "../lib/taxonomy";
+import { getPostHeroImage } from "../lib/postImages";
 
 const { post, taxonomy } = Astro.props as {
   post: CollectionEntry<"posts">;
@@ -20,11 +22,46 @@ function formatDate(d: Date) {
 }
 
 const g = groupForCategory(taxonomy, post.data.category);
+
+// Support both:
+// - Public URLs: "/images/posts/.../hero.webp" -> render with <img>
+// - Asset paths: "src/assets/posts/.../hero.webp" -> resolve via getPostHeroImage + <Image>
+const heroImageRaw = post?.data?.heroImage;
+const isPublicHero =
+  typeof heroImageRaw === "string" && heroImageRaw.startsWith("/");
+const heroAsset =
+  !isPublicHero && heroImageRaw ? getPostHeroImage(heroImageRaw) : null;
+
+const safeHeroAlt = post?.data?.heroAlt ?? post?.data?.title ?? "";
 ---
 
 <a href={`/posts/${post.slug}`} class="block">
-  <!-- Image placeholder (agent can later add image field) -->
-  <div class="rounded-3xl border border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 h-[280px] sm:h-[320px] shadow-sm" />
+  {(isPublicHero || heroAsset) ? (
+    <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+      {isPublicHero ? (
+        <img
+          src={heroImageRaw}
+          alt={safeHeroAlt}
+          class="h-[280px] w-full object-cover sm:h-[320px]"
+          loading="eager"
+          decoding="async"
+        />
+      ) : (
+        <Image
+          src={heroAsset}
+          alt={safeHeroAlt}
+          width={heroAsset.width}
+          height={heroAsset.height}
+          class="h-[280px] w-full object-cover sm:h-[320px]"
+          sizes="(min-width: 1024px) 900px, 100vw"
+          loading="eager"
+          decoding="async"
+        />
+      )}
+    </div>
+  ) : (
+    <div class="rounded-3xl border border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 h-[280px] sm:h-[320px] shadow-sm" />
+  )}
 
   <div class="mt-6">
     <div class="flex items-center justify-between gap-6">
