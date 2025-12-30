@@ -18,6 +18,8 @@ const { Content } = await post.render();
 
 const { products = [], category, publishedAt } = post.data;
 
+const FALLBACK_HERO = "/images/placeholder-hero.webp";
+
 function formatDate(d) {
   try {
     return new Date(d).toLocaleDateString("en-GB", {
@@ -41,22 +43,25 @@ function prettyCategory(s) {
 const dateLabel = publishedAt ? formatDate(publishedAt) : "";
 const categoryLabel = category ? prettyCategory(category) : "";
 
-// sidebar list should match the rendered cards
 const picks = products;
 
-// HERO: support both public URLs and src/assets paths
-const heroImageRaw = post?.data?.heroImage;
-const heroAlt = post?.data?.heroAlt ?? post?.data?.title ?? "";
+// Normalize hero image value
+const heroImageRaw =
+  typeof post?.data?.heroImage === "string" && post.data.heroImage.trim().length > 0
+    ? post.data.heroImage.trim()
+    : FALLBACK_HERO;
 
-const isPublicHero =
-  typeof heroImageRaw === "string" && heroImageRaw.startsWith("/");
+const heroAlt =
+  (typeof post?.data?.heroAlt === "string" && post.data.heroAlt.trim().length > 0)
+    ? post.data.heroAlt.trim()
+    : post?.data?.title ?? "";
 
-const heroAsset =
-  !isPublicHero && heroImageRaw ? getPostHeroImage(heroImageRaw) : null;
+const isPublicHero = heroImageRaw.startsWith("/");
+const heroAsset = !isPublicHero ? getPostHeroImage(heroImageRaw) : null;
 
 // SEO / sharing
 const canonical = `/posts/${post.slug}`;
-const ogImage = typeof heroImageRaw === "string" && heroImageRaw.length > 0 ? heroImageRaw : undefined;
+const ogImage = heroImageRaw; // hero or placeholder, always present now
 ---
 
 <SiteLayout
@@ -66,7 +71,6 @@ const ogImage = typeof heroImageRaw === "string" && heroImageRaw.length > 0 ? he
   ogImage={ogImage}
 >
   <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
-    <!-- HERO -->
     <header class="max-w-none w-full">
       <div class="text-xs text-gray-500">
         {dateLabel}
@@ -83,66 +87,66 @@ const ogImage = typeof heroImageRaw === "string" && heroImageRaw.length > 0 ? he
         </p>
       )}
 
-      {(isPublicHero || heroAsset) ? (
-        <div class="mt-8">
-          <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-            {isPublicHero ? (
-              <img
-                src={heroImageRaw}
-                alt={heroAlt}
-                loading="eager"
-                decoding="async"
-                class="h-auto w-full object-cover"
-              />
+      <div class="mt-8">
+        <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+          {isPublicHero ? (
+            <img
+              src={heroImageRaw}
+              alt={heroAlt}
+              loading="eager"
+              decoding="async"
+              class="h-auto w-full object-cover"
+            />
+          ) : heroAsset ? (
+            <Image
+              src={heroAsset}
+              alt={heroAlt}
+              width={heroAsset.width}
+              height={heroAsset.height}
+              class="h-auto w-full object-cover"
+              sizes="(min-width: 1024px) 960px, 100vw"
+              loading="eager"
+              decoding="async"
+            />
+          ) : (
+            <img
+              src={FALLBACK_HERO}
+              alt={heroAlt}
+              loading="eager"
+              decoding="async"
+              class="h-auto w-full object-cover"
+            />
+          )}
+        </div>
+
+        {post.data.imageCreditName ? (
+          <div class="mt-2 text-xs text-gray-500">
+            Image credit:{" "}
+            {post.data.imageCreditUrl ? (
+              <a
+                href={post.data.imageCreditUrl}
+                class="underline underline-offset-2 hover:text-gray-700"
+              >
+                {post.data.imageCreditName}
+              </a>
             ) : (
-              <Image
-                src={heroAsset}
-                alt={heroAlt}
-                width={heroAsset.width}
-                height={heroAsset.height}
-                class="h-auto w-full object-cover"
-                sizes="(min-width: 1024px) 960px, 100vw"
-                loading="eager"
-                decoding="async"
-              />
+              <span>{post.data.imageCreditName}</span>
             )}
           </div>
-
-          {post.data.imageCreditName ? (
-            <div class="mt-2 text-xs text-gray-500">
-              Image credit:{" "}
-              {post.data.imageCreditUrl ? (
-                <a
-                  href={post.data.imageCreditUrl}
-                  class="underline underline-offset-2 hover:text-gray-700"
-                >
-                  {post.data.imageCreditName}
-                </a>
-              ) : (
-                <span>{post.data.imageCreditName}</span>
-              )}
-            </div>
-          ) : null}
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </header>
 
-    <!-- HR -->
     <hr class="mt-10 border-t-2 border-gray-900/25" />
 
-    <!-- TWO COLUMN -->
     <div class="mt-10 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-12 items-start">
-      <!-- MAIN -->
       <main>
-        <!-- Intro + Why this list (markdown) -->
         <article class="prose-premium prose max-w-none">
           <Content />
         </article>
 
-        <!-- HR -->
         <hr class="mt-12 border-t-2 border-gray-900/25" />
 
-        <!-- LIST OF ITEMS -->
         <section id="picks" class="mt-12">
           <h2 class="text-xl font-semibold text-gray-900">Top picks</h2>
           <p class="mt-2 text-sm text-gray-600">
@@ -159,7 +163,6 @@ const ogImage = typeof heroImageRaw === "string" && heroImageRaw.length > 0 ? he
         </section>
       </main>
 
-      <!-- SIDEBAR: Quick picks -->
       <aside class="hidden lg:block lg:sticky lg:top-6">
         <div class="rounded-2xl border border-gray-200 bg-white p-5">
           <div class="text-sm font-bold tracking-tight text-gray-900">
