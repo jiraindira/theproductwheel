@@ -4,11 +4,19 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
+
 def utc_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
+
 @dataclass
 class RunLogger:
+    """
+    Append-only JSONL run logger.
+
+    Each call writes one JSON object per line to log_path.
+    This is safe for streaming and avoids corrupting a single large JSON file.
+    """
     run_id: str
     post_slug: str
     log_path: Path

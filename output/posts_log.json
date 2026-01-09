@@ -73,5 +73,304 @@
     "audience": "Gift shoppers and skincare enthusiasts looking for winter skincare solutions",
     "file": "site/src/content/posts/2025-12-29-top-cozy-and-stylish-winter-skincare-gift-sets-for-2026.md",
     "product_count": 7
+  },
+  {
+    "date": "2026-01-09",
+    "title": "Before You Buy: Top Immune-Boosting Supplements and Wellness Gifts for Winter 2026 Mistakes to Avoid",
+    "topic": "Top Immune-Boosting Supplements and Wellness Gifts for Winter 2026",
+    "category": "health_and_fitness",
+    "audience": "Health-conscious adults looking to boost immunity and wellness during winter",
+    "file": "site/src/content/posts/2026-01-09-before-you-buy-top-immune-boosting-supplements-and-wellness-gifts-for-winter-2026-mistakes-to-avoid.md",
+    "product_count": 8,
+    "heroImage": "/images/posts/2026-01-09-before-you-buy-top-immune-boosting-supplements-and-wellness-gifts-for-winter-2026-mistakes-to-avoid/hero.webp",
+    "word_count_before": 393,
+    "word_count_after": 757,
+    "depth_modules_applied": [
+      {
+        "name": "how_we_chose",
+        "added_words_estimate": 87,
+        "notes": "Added selection criteria and guardrail note."
+      },
+      {
+        "name": "buyers_guide",
+        "added_words_estimate": 101,
+        "notes": "Added a practical buyer\u2019s guide section."
+      },
+      {
+        "name": "faqs",
+        "added_words_estimate": 91,
+        "notes": "Added FAQ section with 2 questions."
+      },
+      {
+        "name": "alternatives",
+        "added_words_estimate": 49,
+        "notes": "Added alternatives section tailored to detected product categories."
+      },
+      {
+        "name": "care_and_maintenance",
+        "added_words_estimate": 36,
+        "notes": "Added care/maintenance tips tailored to detected product categories."
+      }
+    ],
+    "title_candidates_top3": [
+      {
+        "title": "Before You Buy: Top Immune-Boosting Supplements and Wellness Gifts for Winter 2026 Mistakes to Avoid",
+        "archetype": "mistakes",
+        "score": 71.67,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "Great Top Immune-Boosting Supplements and Wellness Gifts for Winter 2026 on a Budget: What to Look For",
+        "archetype": "budget",
+        "score": 71.05,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "A Seasonal Guide to Top Immune-Boosting Supplements and Wellness Gifts for Winter 2026 You\u2019ll Actually Use",
+        "archetype": "seasonal",
+        "score": 69.39,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-09",
+    "title": "Great Top Cozy Winter Loungewear Gifts for Ultimate Comfort in 2026 on a Budget: What to Look For",
+    "topic": "Top Cozy Winter Loungewear Gifts for Ultimate Comfort in 2026",
+    "category": "fashion",
+    "audience": "Shoppers looking for stylish and comfortable winter clothing gifts",
+    "file": "site/src/content/posts/2026-01-09-great-top-cozy-winter-loungewear-gifts-for-ultimate-comfort-in-2026-on-a-budget-what-to-look-for.md",
+    "product_count": 7,
+    "heroImage": "/images/posts/2026-01-09-great-top-cozy-winter-loungewear-gifts-for-ultimate-comfort-in-2026-on-a-budget-what-to-look-for/hero.webp",
+    "word_count_before": 354,
+    "word_count_after": 825,
+    "depth_modules_applied": [
+      {
+        "name": "quick_picks",
+        "added_words_estimate": 106,
+        "notes": "Added a quick picks summary section."
+      },
+      {
+        "name": "how_we_chose",
+        "added_words_estimate": 87,
+        "notes": "Added selection criteria and guardrail note."
+      },
+      {
+        "name": "buyers_guide",
+        "added_words_estimate": 102,
+        "notes": "Added a practical buyer\u2019s guide section."
+      },
+      {
+        "name": "faqs",
+        "added_words_estimate": 91,
+        "notes": "Added FAQ section with 2 questions."
+      },
+      {
+        "name": "alternatives",
+        "added_words_estimate": 49,
+        "notes": "Added alternatives section tailored to detected product categories."
+      },
+      {
+        "name": "care_and_maintenance",
+        "added_words_estimate": 36,
+        "notes": "Added care/maintenance tips tailored to detected product categories."
+      }
+    ],
+    "title_candidates_top3": [
+      {
+        "title": "Great Top Cozy Winter Loungewear Gifts for Ultimate Comfort in 2026 on a Budget: What to Look For",
+        "archetype": "budget",
+        "score": 71.5,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "This Season\u2019s Top Cozy Winter Loungewear Gifts for Ultimate Comfort in 2026: What\u2019s Worth Buying",
+        "archetype": "seasonal",
+        "score": 71.5,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "How to Get the Most from Top Cozy Winter Loungewear Gifts for Ultimate Comfort in 2026 This Season",
+        "archetype": "how-to",
+        "score": 71.45,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-09",
+    "title": "Affordable Top Indoor Gardening Kits for Winter 2026: Grow Fresh Herbs and Veggies at Home That Still Feel Premium",
+    "topic": "Top Indoor Gardening Kits for Winter 2026: Grow Fresh Herbs and Veggies at Home",
+    "category": "home_and_kitchen",
+    "audience": "Urban dwellers and gardening enthusiasts looking to grow fresh produce indoors during winter",
+    "file": "site/src/content/posts/2026-01-09-affordable-top-indoor-gardening-kits-for-winter-2026-grow-fresh-herbs-and-veggies-at-home-that-still-feel-premium.md",
+    "product_count": 7,
+    "heroImage": "/images/posts/2026-01-09-affordable-top-indoor-gardening-kits-for-winter-2026-grow-fresh-herbs-and-veggies-at-home-that-still-feel-premium/hero.webp",
+    "word_count_before": 401,
+    "word_count_after": 834,
+    "depth_modules_applied": [
+      {
+        "name": "quick_picks",
+        "added_words_estimate": 119,
+        "notes": "Added a quick picks summary section."
+      },
+      {
+        "name": "how_we_chose",
+        "added_words_estimate": 87,
+        "notes": "Added selection criteria and guardrail note."
+      },
+      {
+        "name": "buyers_guide",
+        "added_words_estimate": 106,
+        "notes": "Added a practical buyer\u2019s guide section."
+      },
+      {
+        "name": "faqs",
+        "added_words_estimate": 49,
+        "notes": "Added FAQ section with 1 questions."
+      },
+      {
+        "name": "alternatives",
+        "added_words_estimate": 36,
+        "notes": "Added alternatives section tailored to detected product categories."
+      },
+      {
+        "name": "care_and_maintenance",
+        "added_words_estimate": 36,
+        "notes": "Added care/maintenance tips tailored to detected product categories."
+      }
+    ],
+    "title_candidates_top3": [
+      {
+        "title": "Affordable Top Indoor Gardening Kits for Winter 2026: Grow Fresh Herbs and Veggies at Home That Still Feel Premium",
+        "archetype": "budget",
+        "score": 64.6,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "Avoid These Top Indoor Gardening Kits for Winter 2026: Grow Fresh Herbs and Veggies at Home Pitfalls: A Quick Guide",
+        "archetype": "mistakes",
+        "score": 64.42,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "This Season\u2019s Top Indoor Gardening Kits for Winter 2026: Grow Fresh Herbs and Veggies at Home: What\u2019s Worth Buying",
+        "archetype": "seasonal",
+        "score": 63.2,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-09",
+    "title": "Avoid These Top Eco-Friendly and Non-Toxic Baby Products for New Parents in 2026 Pitfalls: A Quick Guide",
+    "topic": "Top Eco-Friendly and Non-Toxic Baby Products for New Parents in 2026",
+    "category": "parenting_and_family",
+    "audience": "New and expecting parents looking for safe, sustainable baby product options",
+    "file": "site/src/content/posts/2026-01-09-avoid-these-top-eco-friendly-and-non-toxic-baby-products-for-new-parents-in-2026-pitfalls-a-quick-guide.md",
+    "product_count": 7,
+    "heroImage": "/images/posts/2026-01-09-avoid-these-top-eco-friendly-and-non-toxic-baby-products-for-new-parents-in-2026-pitfalls-a-quick-guide/hero.webp",
+    "word_count_before": 372,
+    "word_count_after": 804,
+    "depth_modules_applied": [
+      {
+        "name": "quick_picks",
+        "added_words_estimate": 121,
+        "notes": "Added a quick picks summary section."
+      },
+      {
+        "name": "how_we_chose",
+        "added_words_estimate": 87,
+        "notes": "Added selection criteria and guardrail note."
+      },
+      {
+        "name": "buyers_guide",
+        "added_words_estimate": 103,
+        "notes": "Added a practical buyer\u2019s guide section."
+      },
+      {
+        "name": "faqs",
+        "added_words_estimate": 49,
+        "notes": "Added FAQ section with 1 questions."
+      },
+      {
+        "name": "alternatives",
+        "added_words_estimate": 36,
+        "notes": "Added alternatives section tailored to detected product categories."
+      },
+      {
+        "name": "care_and_maintenance",
+        "added_words_estimate": 36,
+        "notes": "Added care/maintenance tips tailored to detected product categories."
+      }
+    ],
+    "title_candidates_top3": [
+      {
+        "title": "Avoid These Top Eco-Friendly and Non-Toxic Baby Products for New Parents in 2026 Pitfalls: A Quick Guide",
+        "archetype": "mistakes",
+        "score": 70.71,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "Giftable Top Eco-Friendly and Non-Toxic Baby Products for New Parents in 2026: Thoughtful Picks People Use",
+        "archetype": "giftable",
+        "score": 69.39,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "This Season\u2019s Top Eco-Friendly and Non-Toxic Baby Products for New Parents in 2026: What\u2019s Worth Buying",
+        "archetype": "seasonal",
+        "score": 69.37,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      }
+    ]
   }
 ]
