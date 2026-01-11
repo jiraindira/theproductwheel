@@ -22,8 +22,7 @@ PUBLIC_IMAGES_DIR = Path("site/public/images")
 PUBLIC_POST_IMAGES_DIR = PUBLIC_IMAGES_DIR / "posts"
 PLACEHOLDER_HERO_PATH = PUBLIC_IMAGES_DIR / "placeholder-hero.webp"
 
-# If you *do* have image credit info, set these.
-# Otherwise leave as None and the generator will omit the fields entirely.
+# Optional image credit fields (Astro schema makes them optional; omit if None)
 DEFAULT_IMAGE_CREDIT_NAME = None  # e.g. "Unsplash"
 DEFAULT_IMAGE_CREDIT_URL = None   # e.g. "https://unsplash.com/photos/abc123"
 
@@ -46,7 +45,7 @@ NORMALIZE_TRANSLATION_TABLE = str.maketrans({
 
 
 def normalize_text(s: str) -> str:
-    return s.translate(NORMALIZE_TRANSLATION_TABLE)
+    return (s or "").translate(NORMALIZE_TRANSLATION_TABLE)
 
 
 def ensure_log_file():
@@ -64,7 +63,7 @@ def append_log(entry: dict):
     except Exception:
         data = []
     data.append(entry)
-    LOG_PATH.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    LOG_PATH.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 def ensure_hero_image(slug: str) -> tuple[str, str]:
@@ -133,7 +132,7 @@ def main():
         {
             "title": normalize_text(p.title),
             "url": str(p.url),
-            "price": p.price,
+            "price": str(p.price),
             "rating": float(p.rating),
             "reviews_count": int(p.reviews_count),
             "description": normalize_text(p.description),
@@ -180,8 +179,8 @@ def main():
     title_out = title_agent.run(title_inp)
     selected_title = normalize_text(topic.topic)
     try:
-        if title_out.get("selected"):
-            selected_title = title_out["selected"][0]["title"]
+        if isinstance(title_out, dict) and title_out.get("selected"):
+            selected_title = normalize_text(title_out["selected"][0]["title"])
     except Exception:
         selected_title = normalize_text(topic.topic)
 
@@ -204,27 +203,27 @@ def main():
     # 7) Frontmatter must match site/src/content/config.ts
     meta_description = f"Curated {topic.category.replace('_', ' ')} picks for {normalize_text(topic.audience)}."
 
-    md = []
+    md: list[str] = []
     md.append("---")
     md.append(f'title: "{normalize_text(selected_title)}"')
     md.append(f'description: "{meta_description}"')
     md.append(f"publishedAt: {post_date}")
     md.append(f'category: "{topic.category}"')
     md.append(f'audience: "{normalize_text(topic.audience)}"')
-
     md.append(f'heroImage: "{hero_image_url}"')
     md.append(f'heroAlt: "{hero_alt}"')
 
-    # ✅ Only include image credit fields if present.
+    # Optional image credit fields
     if DEFAULT_IMAGE_CREDIT_NAME:
         md.append(f'imageCreditName: "{DEFAULT_IMAGE_CREDIT_NAME}"')
     if DEFAULT_IMAGE_CREDIT_URL:
         md.append(f'imageCreditUrl: "{DEFAULT_IMAGE_CREDIT_URL}"')
 
-    # Products as JSON inside YAML (valid YAML)
     md.append(f"products: {json.dumps(products, ensure_ascii=False)}")
     md.append("---")
     md.append("")
+
+    # Seed a Why this list section (will be REWRITTEN in upgrade mode)
     md.append("## Why this list")
     md.append("")
     md.append(normalize_text(topic.rationale).strip())
@@ -233,32 +232,28 @@ def main():
     draft_markdown = "\n".join(md)
     before_wc = estimate_word_count(draft_markdown)
 
-    # 8) Depth expansion
+    # 8) Depth expansion (UPGRADE MODE)
     depth_agent = DepthExpansionAgent()
+
+    modules = [
+        ExpansionModuleSpec(name="why_this_list", enabled=True, max_words=220, rewrite_mode="upgrade"),
+        ExpansionModuleSpec(name="how_we_chose", enabled=True, max_words=220, rewrite_mode="upgrade"),
+        ExpansionModuleSpec(name="quick_picks", enabled=True, max_words=260),
+        ExpansionModuleSpec(name="buyers_guide", enabled=True, max_words=220, rewrite_mode="upgrade"),
+        ExpansionModuleSpec(name="faqs", enabled=True, max_words=320, rewrite_mode="upgrade"),
+        ExpansionModuleSpec(name="alternatives", enabled=True, max_words=220, rewrite_mode="upgrade"),
+        ExpansionModuleSpec(name="care_and_maintenance", enabled=True, max_words=240, rewrite_mode="upgrade"),
+    ]
+
     depth_inp = DepthExpansionInput(
-        topic=normalize_text(topic.topic),
-        primary_keyword=normalize_text(topic.topic),
-        secondary_keywords=[],
-        title=normalize_text(selected_title),
-        slug=post_slug,
         draft_markdown=draft_markdown,
         products=products,
-        outline=[],
-        faqs=[],
-        target_word_count=1400,
+        modules=modules,
+        rewrite_mode="upgrade",          # global default
         max_added_words=1200,
         voice="neutral",
-        modules=[
-            ExpansionModuleSpec(name="quick_picks", enabled=True, max_words=220),
-            ExpansionModuleSpec(name="how_we_chose", enabled=True, max_words=220),
-            ExpansionModuleSpec(name="buyers_guide", enabled=True, max_words=450),
-            ExpansionModuleSpec(name="faqs", enabled=True, max_words=420),
-            ExpansionModuleSpec(name="alternatives", enabled=True, max_words=280),
-            ExpansionModuleSpec(name="care_and_maintenance", enabled=True, max_words=280),
-        ],
+        faqs=[],
         forbid_claims_of_testing=True,
-        allow_new_sections=True,
-        render_products_in_body=False,
     )
 
     depth_out = depth_agent.run(depth_inp)

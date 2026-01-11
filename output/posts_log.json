@@ -94,7 +94,7 @@
       {
         "name": "buyers_guide",
         "added_words_estimate": 101,
-        "notes": "Added a practical buyer\u2019s guide section."
+        "notes": "Added a practical buyer’s guide section."
       },
       {
         "name": "faqs",
@@ -134,7 +134,7 @@
         ]
       },
       {
-        "title": "A Seasonal Guide to Top Immune-Boosting Supplements and Wellness Gifts for Winter 2026 You\u2019ll Actually Use",
+        "title": "A Seasonal Guide to Top Immune-Boosting Supplements and Wellness Gifts for Winter 2026 You’ll Actually Use",
         "archetype": "seasonal",
         "score": 69.39,
         "reasons": [
@@ -170,7 +170,7 @@
       {
         "name": "buyers_guide",
         "added_words_estimate": 102,
-        "notes": "Added a practical buyer\u2019s guide section."
+        "notes": "Added a practical buyer’s guide section."
       },
       {
         "name": "faqs",
@@ -200,7 +200,7 @@
         ]
       },
       {
-        "title": "This Season\u2019s Top Cozy Winter Loungewear Gifts for Ultimate Comfort in 2026: What\u2019s Worth Buying",
+        "title": "This Season’s Top Cozy Winter Loungewear Gifts for Ultimate Comfort in 2026: What’s Worth Buying",
         "archetype": "seasonal",
         "score": 71.5,
         "reasons": [
@@ -246,7 +246,7 @@
       {
         "name": "buyers_guide",
         "added_words_estimate": 106,
-        "notes": "Added a practical buyer\u2019s guide section."
+        "notes": "Added a practical buyer’s guide section."
       },
       {
         "name": "faqs",
@@ -286,7 +286,7 @@
         ]
       },
       {
-        "title": "This Season\u2019s Top Indoor Gardening Kits for Winter 2026: Grow Fresh Herbs and Veggies at Home: What\u2019s Worth Buying",
+        "title": "This Season’s Top Indoor Gardening Kits for Winter 2026: Grow Fresh Herbs and Veggies at Home: What’s Worth Buying",
         "archetype": "seasonal",
         "score": 63.2,
         "reasons": [
@@ -322,7 +322,7 @@
       {
         "name": "buyers_guide",
         "added_words_estimate": 103,
-        "notes": "Added a practical buyer\u2019s guide section."
+        "notes": "Added a practical buyer’s guide section."
       },
       {
         "name": "faqs",
@@ -362,9 +362,576 @@
         ]
       },
       {
-        "title": "This Season\u2019s Top Eco-Friendly and Non-Toxic Baby Products for New Parents in 2026: What\u2019s Worth Buying",
+        "title": "This Season’s Top Eco-Friendly and Non-Toxic Baby Products for New Parents in 2026: What’s Worth Buying",
         "archetype": "seasonal",
         "score": 69.37,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-10",
+    "title": "This Season's Top Eco-Friendly Winter Camping Gear for Your 2026 Outdoor Adventures: What's Worth Buying",
+    "topic": "Top Eco-Friendly Winter Camping Gear for Your 2026 Outdoor Adventures",
+    "category": "outdoors_and_travel",
+    "audience": "Outdoor enthusiasts and eco-conscious campers in the US looking for sustainable winter camping equipment",
+    "file": "site/src/content/posts/2026-01-10-this-seasons-top-eco-friendly-winter-camping-gear-for-your-2026-outdoor-adventures-whats-worth-buying.md",
+    "product_count": 7,
+    "heroImage": "/images/posts/2026-01-10-this-seasons-top-eco-friendly-winter-camping-gear-for-your-2026-outdoor-adventures-whats-worth-buying/hero.webp",
+    "word_count_before": 376,
+    "word_count_after": 868,
+    "depth_modules_applied": [
+      {
+        "name": "why_this_list",
+        "added_words_estimate": 45,
+        "notes": "Rewrote Why this list to remove meta/agent language and add human framing."
+      },
+      {
+        "name": "quick_picks",
+        "added_words_estimate": 241,
+        "notes": "Added category-aware, human quick picks (no generic praise)."
+      },
+      {
+        "name": "how_we_chose",
+        "added_words_estimate": 99,
+        "notes": "Added parenting-focused criteria and removed tech-template language."
+      },
+      {
+        "name": "buyers_guide",
+        "added_words_estimate": 48,
+        "notes": "Added a parenting-specific buyer’s guide (materials/ingredients/usability)."
+      },
+      {
+        "name": "faqs",
+        "added_words_estimate": 41,
+        "notes": "Added parenting FAQs (no tech gift leakage)."
+      },
+      {
+        "name": "alternatives",
+        "added_words_estimate": 10,
+        "notes": "Added alternatives framed for parenting (budget/fragrance-free/basics)."
+      },
+      {
+        "name": "care_and_maintenance",
+        "added_words_estimate": 8,
+        "notes": "Added care tips that match baby products (no batteries/cases)."
+      }
+    ],
+    "title_candidates_top3": [
+      {
+        "title": "This Season’s Top Eco-Friendly Winter Camping Gear for Your 2026 Outdoor Adventures: What’s Worth Buying",
+        "archetype": "seasonal",
+        "score": 68.0,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "How to Get the Most from Top Eco-Friendly Winter Camping Gear for Your 2026 Outdoor Adventures This Season",
+        "archetype": "how-to",
+        "score": 67.87,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "Giftable Top Eco-Friendly Winter Camping Gear for Your 2026 Outdoor Adventures: Thoughtful Picks People Use",
+        "archetype": "giftable",
+        "score": 66.0,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-10",
+    "title": "How to Get the Most from Top Cozy and Stylish Winter Skincare Gifts for Dry Skin in 2026 This Season",
+    "topic": "Top Cozy and Stylish Winter Skincare Gifts for Dry Skin in 2026",
+    "category": "beauty_and_grooming",
+    "audience": "Adults in the US looking for effective winter skincare gift ideas",
+    "file": "site/src/content/posts/2026-01-10-how-to-get-the-most-from-top-cozy-and-stylish-winter-skincare-gifts-for-dry-skin-in-2026-this-season.md",
+    "product_count": 8,
+    "heroImage": "/images/posts/2026-01-10-how-to-get-the-most-from-top-cozy-and-stylish-winter-skincare-gifts-for-dry-skin-in-2026-this-season/hero.webp",
+    "word_count_before": 398,
+    "word_count_after": 755,
+    "depth_modules_applied": [
+      {
+        "name": "why_this_list",
+        "added_words_estimate": 0,
+        "notes": "Rewrote Why this list using profile 'Beauty Real-Life Journal Voice'."
+      },
+      {
+        "name": "quick_picks",
+        "added_words_estimate": 176,
+        "notes": "Added quick picks using profile 'Beauty Real-Life Journal Voice'."
+      },
+      {
+        "name": "how_we_chose",
+        "added_words_estimate": 59,
+        "notes": "Added How we chose using profile 'Beauty Real-Life Journal Voice'."
+      },
+      {
+        "name": "buyers_guide",
+        "added_words_estimate": 35,
+        "notes": "Added Buyer’s guide using profile 'Beauty Real-Life Journal Voice'."
+      },
+      {
+        "name": "faqs",
+        "added_words_estimate": 42,
+        "notes": "Added FAQs using profile 'Beauty Real-Life Journal Voice'."
+      },
+      {
+        "name": "alternatives",
+        "added_words_estimate": 34,
+        "notes": "Added alternatives using profile 'Beauty Real-Life Journal Voice'."
+      },
+      {
+        "name": "care_and_maintenance",
+        "added_words_estimate": 31,
+        "notes": "Added care tips using profile 'Beauty Real-Life Journal Voice'."
+      }
+    ],
+    "title_candidates_top3": [
+      {
+        "title": "How to Get the Most from Top Cozy and Stylish Winter Skincare Gifts for Dry Skin in 2026 This Season",
+        "archetype": "how-to",
+        "score": 65.68,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Somewhat similar to an existing title"
+        ]
+      },
+      {
+        "title": "This Season’s Top Cozy and Stylish Winter Skincare Gifts for Dry Skin in 2026: What’s Worth Buying",
+        "archetype": "seasonal",
+        "score": 65.25,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Somewhat similar to an existing title"
+        ]
+      },
+      {
+        "title": "Avoid These Top Cozy and Stylish Winter Skincare Gifts for Dry Skin in 2026 Pitfalls: A Quick Guide",
+        "archetype": "mistakes",
+        "score": 64.75,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Somewhat similar to an existing title"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-10",
+    "title": "Affordable Top Immune-Boosting Supplements and Wellness Products for Winter 2026 That Still Feel Premium",
+    "topic": "Top Immune-Boosting Supplements and Wellness Products for Winter 2026",
+    "category": "health_and_fitness",
+    "audience": "Health-conscious adults looking to strengthen immunity during winter",
+    "file": "site/src/content/posts/2026-01-10-affordable-top-immune-boosting-supplements-and-wellness-products-for-winter-2026-that-still-feel-premium.md",
+    "product_count": 8,
+    "heroImage": "/images/posts/2026-01-10-affordable-top-immune-boosting-supplements-and-wellness-products-for-winter-2026-that-still-feel-premium/hero.webp",
+    "word_count_before": 394,
+    "word_count_after": 736,
+    "depth_modules_applied": [
+      {
+        "name": "why_this_list",
+        "added_words_estimate": 0,
+        "notes": "Rewrote Why this list using profile 'Fitness Friendly Journal Voice'."
+      },
+      {
+        "name": "quick_picks",
+        "added_words_estimate": 175,
+        "notes": "Added quick picks using profile 'Fitness Friendly Journal Voice'."
+      },
+      {
+        "name": "how_we_chose",
+        "added_words_estimate": 59,
+        "notes": "Added How we chose using profile 'Fitness Friendly Journal Voice'."
+      },
+      {
+        "name": "buyers_guide",
+        "added_words_estimate": 35,
+        "notes": "Added Buyer’s guide using profile 'Fitness Friendly Journal Voice'."
+      },
+      {
+        "name": "faqs",
+        "added_words_estimate": 42,
+        "notes": "Added FAQs using profile 'Fitness Friendly Journal Voice'."
+      },
+      {
+        "name": "alternatives",
+        "added_words_estimate": 34,
+        "notes": "Added alternatives using profile 'Fitness Friendly Journal Voice'."
+      },
+      {
+        "name": "care_and_maintenance",
+        "added_words_estimate": 31,
+        "notes": "Added care tips using profile 'Fitness Friendly Journal Voice'."
+      }
+    ],
+    "title_candidates_top3": [
+      {
+        "title": "Affordable Top Immune-Boosting Supplements and Wellness Products for Winter 2026 That Still Feel Premium",
+        "archetype": "budget",
+        "score": 63.42,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Somewhat similar to an existing title"
+        ]
+      },
+      {
+        "title": "This Season’s Top Immune-Boosting Supplements and Wellness Products for Winter 2026: What’s Worth Buying",
+        "archetype": "seasonal",
+        "score": 62.78,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Somewhat similar to an existing title"
+        ]
+      },
+      {
+        "title": "Giftable Top Immune-Boosting Supplements and Wellness Products for Winter 2026: Thoughtful Picks People Use",
+        "archetype": "giftable",
+        "score": 62.18,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Somewhat similar to an existing title"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-10",
+    "title": "Affordable Top Cozy Winter Accessories to Gift in 2026 for Ultimate Comfort That Still Feel Premium",
+    "topic": "Top Cozy Winter Accessories to Gift in 2026 for Ultimate Comfort",
+    "category": "fashion",
+    "audience": "US consumers looking for stylish and practical winter gift ideas",
+    "file": "site/src/content/posts/2026-01-10-affordable-top-cozy-winter-accessories-to-gift-in-2026-for-ultimate-comfort-that-still-feel-premium.md",
+    "product_count": 8,
+    "heroImage": "/images/posts/2026-01-10-affordable-top-cozy-winter-accessories-to-gift-in-2026-for-ultimate-comfort-that-still-feel-premium/hero.webp",
+    "word_count_before": 362,
+    "word_count_after": 711,
+    "depth_modules_applied": [
+      {
+        "name": "why_this_list",
+        "added_words_estimate": 0,
+        "notes": "Rewrote Why this list using profile 'Fashion Real-Life Voice'."
+      },
+      {
+        "name": "quick_picks",
+        "added_words_estimate": 166,
+        "notes": "Added quick picks using profile 'Fashion Real-Life Voice'."
+      },
+      {
+        "name": "how_we_chose",
+        "added_words_estimate": 59,
+        "notes": "Added How we chose using profile 'Fashion Real-Life Voice'."
+      },
+      {
+        "name": "buyers_guide",
+        "added_words_estimate": 35,
+        "notes": "Added Buyer’s guide using profile 'Fashion Real-Life Voice'."
+      },
+      {
+        "name": "faqs",
+        "added_words_estimate": 42,
+        "notes": "Added FAQs using profile 'Fashion Real-Life Voice'."
+      },
+      {
+        "name": "alternatives",
+        "added_words_estimate": 34,
+        "notes": "Added alternatives using profile 'Fashion Real-Life Voice'."
+      },
+      {
+        "name": "care_and_maintenance",
+        "added_words_estimate": 31,
+        "notes": "Added care tips using profile 'Fashion Real-Life Voice'."
+      }
+    ],
+    "title_candidates_top3": [
+      {
+        "title": "Affordable Top Cozy Winter Accessories to Gift in 2026 for Ultimate Comfort That Still Feel Premium",
+        "archetype": "budget",
+        "score": 66.18,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Somewhat similar to an existing title"
+        ]
+      },
+      {
+        "title": "This Season’s Top Cozy Winter Accessories to Gift in 2026 for Ultimate Comfort: What’s Worth Buying",
+        "archetype": "seasonal",
+        "score": 65.92,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Somewhat similar to an existing title"
+        ]
+      },
+      {
+        "title": "Giftable Top Cozy Winter Accessories to Gift in 2026 for Ultimate Comfort: Thoughtful Picks People Use",
+        "archetype": "giftable",
+        "score": 65.88,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Somewhat similar to an existing title"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-10",
+    "title": "Giftable Top Space-Saving Kitchen Gadgets to Refresh Your Cooking Space for 2026: Thoughtful Picks People Use",
+    "topic": "Top Space-Saving Kitchen Gadgets to Refresh Your Cooking Space for 2026",
+    "category": "home_and_kitchen",
+    "audience": "Home cooks and apartment dwellers looking to optimize kitchen space",
+    "file": "site/src/content/posts/2026-01-10-giftable-top-space-saving-kitchen-gadgets-to-refresh-your-cooking-space-for-2026-thoughtful-picks-people-use.md",
+    "product_count": 8,
+    "heroImage": "/images/posts/2026-01-10-giftable-top-space-saving-kitchen-gadgets-to-refresh-your-cooking-space-for-2026-thoughtful-picks-people-use/hero.webp",
+    "word_count_before": 393,
+    "word_count_after": 742,
+    "depth_modules_applied": [
+      {
+        "name": "why_this_list",
+        "added_words_estimate": 0,
+        "notes": "Rewrote Why this list using profile 'Home Practical Journal Voice' (upgrade)."
+      },
+      {
+        "name": "how_we_chose",
+        "added_words_estimate": 59,
+        "notes": "Added How we chose using profile 'Home Practical Journal Voice'."
+      },
+      {
+        "name": "quick_picks",
+        "added_words_estimate": 179,
+        "notes": "Added Quick picks using profile 'Home Practical Journal Voice'."
+      },
+      {
+        "name": "buyers_guide",
+        "added_words_estimate": 35,
+        "notes": "Added Buyer’s guide using profile 'Home Practical Journal Voice'."
+      },
+      {
+        "name": "faqs",
+        "added_words_estimate": 42,
+        "notes": "Added FAQs using profile 'Home Practical Journal Voice'."
+      },
+      {
+        "name": "alternatives",
+        "added_words_estimate": 34,
+        "notes": "Added Alternatives worth considering using profile 'Home Practical Journal Voice'."
+      },
+      {
+        "name": "care_and_maintenance",
+        "added_words_estimate": 31,
+        "notes": "Added Care and maintenance using profile 'Home Practical Journal Voice'."
+      }
+    ],
+    "title_candidates_top3": [
+      {
+        "title": "Giftable Top Space-Saving Kitchen Gadgets to Refresh Your Cooking Space for 2026: Thoughtful Picks People Use",
+        "archetype": "giftable",
+        "score": 70.5,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "A Seasonal Guide to Top Space-Saving Kitchen Gadgets to Refresh Your Cooking Space for 2026 You’ll Actually Use",
+        "archetype": "seasonal",
+        "score": 68.47,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "The Best Value Top Space-Saving Kitchen Gadgets to Refresh Your Cooking Space for 2026: Smart Picks That Hold Up",
+        "archetype": "budget",
+        "score": 68.17,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-10",
+    "title": "Avoid These Top Winter Skincare Gifts for Men: Practical Grooming Sets to Beat the Cold Pitfalls: A Quick Guide",
+    "topic": "Top Winter Skincare Gifts for Men: Practical Grooming Sets to Beat the Cold",
+    "category": "beauty_and_grooming",
+    "audience": "Men looking for effective winter skincare solutions and gift buyers seeking grooming sets for men",
+    "file": "site/src/content/posts/2026-01-10-avoid-these-top-winter-skincare-gifts-for-men-practical-grooming-sets-to-beat-the-cold-pitfalls-a-quick-guide.md",
+    "product_count": 7,
+    "heroImage": "/images/posts/2026-01-10-avoid-these-top-winter-skincare-gifts-for-men-practical-grooming-sets-to-beat-the-cold-pitfalls-a-quick-guide/hero.webp",
+    "word_count_before": 402,
+    "word_count_after": 1780,
+    "depth_modules_applied": [
+      {
+        "name": "why_this_list",
+        "added_words_estimate": 108,
+        "notes": "Rewrote Why this list (upgrade)."
+      },
+      {
+        "name": "how_we_chose",
+        "added_words_estimate": 216,
+        "notes": "Added How we chose (upgrade)."
+      },
+      {
+        "name": "quick_picks",
+        "added_words_estimate": 194,
+        "notes": "Added Quick picks."
+      },
+      {
+        "name": "buyers_guide",
+        "added_words_estimate": 215,
+        "notes": "Added Buyer’s guide (upgrade)."
+      },
+      {
+        "name": "faqs",
+        "added_words_estimate": 209,
+        "notes": "Added FAQs (upgrade)."
+      },
+      {
+        "name": "alternatives",
+        "added_words_estimate": 213,
+        "notes": "Added Alternatives worth considering (upgrade)."
+      },
+      {
+        "name": "care_and_maintenance",
+        "added_words_estimate": 223,
+        "notes": "Added Care and maintenance (upgrade)."
+      }
+    ],
+    "title_candidates_top3": [
+      {
+        "title": "Avoid These Top Winter Skincare Gifts for Men: Practical Grooming Sets to Beat the Cold Pitfalls: A Quick Guide",
+        "archetype": "mistakes",
+        "score": 65.17,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "A Seasonal Guide to Top Winter Skincare Gifts for Men: Practical Grooming Sets to Beat the Cold You’ll Actually Use",
+        "archetype": "seasonal",
+        "score": 64.1,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "The Best Value Top Winter Skincare Gifts for Men: Practical Grooming Sets to Beat the Cold: Smart Picks That Hold Up",
+        "archetype": "budget",
+        "score": 63.6,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-11",
+    "title": "Common Top Heart-Healthy Kitchen Gadgets to Kickstart Your New Year Wellness Goals Mistakes (and What to Do Instead)",
+    "topic": "Top Heart-Healthy Kitchen Gadgets to Kickstart Your New Year Wellness Goals",
+    "category": "home_and_kitchen",
+    "audience": "Health-conscious adults looking to improve their diet and cooking habits in the new year",
+    "file": "site/src/content/posts/2026-01-11-common-top-heart-healthy-kitchen-gadgets-to-kickstart-your-new-year-wellness-goals-mistakes-and-what-to-do-instead.md",
+    "product_count": 8,
+    "heroImage": "/images/posts/2026-01-11-common-top-heart-healthy-kitchen-gadgets-to-kickstart-your-new-year-wellness-goals-mistakes-and-what-to-do-instead/hero.webp",
+    "word_count_before": 374,
+    "word_count_after": 1772,
+    "depth_modules_applied": [
+      {
+        "name": "why_this_list",
+        "added_words_estimate": 115,
+        "notes": "Rewrote Why this list (upgrade)."
+      },
+      {
+        "name": "how_we_chose",
+        "added_words_estimate": 211,
+        "notes": "Added How we chose (upgrade)."
+      },
+      {
+        "name": "quick_picks",
+        "added_words_estimate": 168,
+        "notes": "Added Quick picks."
+      },
+      {
+        "name": "buyers_guide",
+        "added_words_estimate": 218,
+        "notes": "Added Buyer’s guide (upgrade)."
+      },
+      {
+        "name": "faqs",
+        "added_words_estimate": 227,
+        "notes": "Added FAQs (upgrade)."
+      },
+      {
+        "name": "alternatives",
+        "added_words_estimate": 215,
+        "notes": "Added Alternatives worth considering (upgrade)."
+      },
+      {
+        "name": "care_and_maintenance",
+        "added_words_estimate": 244,
+        "notes": "Added Care and maintenance (upgrade)."
+      }
+    ],
+    "title_candidates_top3": [
+      {
+        "title": "Common Top Heart-Healthy Kitchen Gadgets to Kickstart Your New Year Wellness Goals Mistakes (and What to Do Instead)",
+        "archetype": "mistakes",
+        "score": 65.97,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "A Seasonal Guide to Top Heart-Healthy Kitchen Gadgets to Kickstart Your New Year Wellness Goals You’ll Actually Use",
+        "archetype": "seasonal",
+        "score": 65.26,
+        "reasons": [
+          "Primary keyword present",
+          "Too long; clarity penalty",
+          "Distinct from existing titles"
+        ]
+      },
+      {
+        "title": "Affordable Top Heart-Healthy Kitchen Gadgets to Kickstart Your New Year Wellness Goals That Still Feel Premium",
+        "archetype": "budget",
+        "score": 65.2,
         "reasons": [
           "Primary keyword present",
           "Too long; clarity penalty",
