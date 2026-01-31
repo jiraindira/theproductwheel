@@ -56,8 +56,8 @@ const safeHeroAlt =
 const metaCats = categories.slice(0, 2);
 const extraCount = categories.length > 2 ? categories.length - 2 : 0;
 
-// Hero styling: force a wide hero window
-const HERO_CLASS = "w-full aspect-[16/5] object-cover bg-gray-50";
+// Hero styling: match our generated hero aspect (16:9) for cleaner crops
+const HERO_CLASS = "w-full aspect-video object-cover bg-gray-50";
 ---
 
 <a href={`/posts/${post.slug}`} class="block">
