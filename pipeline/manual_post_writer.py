@@ -24,6 +24,7 @@ from schemas.post_format import PostFormatId
 
 
 ASTRO_POSTS_DIR = Path("site/src/content/posts")
+PUBLIC_DIR = Path("site/public")
 PUBLIC_IMAGES_DIR = Path("site/public/images")
 CATALOG_PATH = Path("data/catalog/master.json")
 
@@ -451,7 +452,9 @@ class ManualPostWriter:
 
             hero = ensure_post_hero_is_present(
                 agent=img_agent,
-                public_dir=str(PUBLIC_IMAGES_DIR),
+                # NOTE: self-heal expects the site/public root because hero paths
+                # are expressed as /images/... URL paths.
+                public_dir=str(PUBLIC_DIR),
                 slug=slug,
                 category=category,  # primary
                 title=title,
