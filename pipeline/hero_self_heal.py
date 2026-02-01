@@ -3,6 +3,7 @@ from __future__ import annotations
 import shutil
 import traceback
 from dataclasses import dataclass
+import hashlib
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -42,6 +43,22 @@ def _missing_or_empty(p: Path) -> bool:
     return (not p.exists()) or p.stat().st_size == 0
 
 
+def _sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _is_same_file(a: Path, b: Path) -> bool:
+    if (not a.exists()) or (not b.exists()):
+        return False
+    if a.stat().st_size != b.stat().st_size:
+        return False
+    return _sha256(a) == _sha256(b)
+
+
 def ensure_hero_assets_exist(
     *,
     public_dir: Path,
@@ -64,6 +81,13 @@ def ensure_hero_assets_exist(
     """
     paths = HeroPaths.for_slug(slug)
 
+    placeholder_disk = _disk_path(public_dir, placeholder_url)
+    if not placeholder_disk.exists():
+        raise FileNotFoundError(
+            f"Placeholder hero missing at {placeholder_disk}. "
+            f"Create it (e.g. site/public/images/placeholder-hero.webp) so self-heal can backfill."
+        )
+
     expected = [
         _disk_path(public_dir, paths.hero),
         _disk_path(public_dir, paths.hero_home),
@@ -71,20 +95,33 @@ def ensure_hero_assets_exist(
         _disk_path(public_dir, paths.hero_source),
     ]
 
-    if all(not _missing_or_empty(p) for p in expected):
+    def _missing_or_placeholder(p: Path) -> bool:
+        return _missing_or_empty(p) or _is_same_file(p, placeholder_disk)
+
+    if all(not _missing_or_placeholder(p) for p in expected):
         return paths
 
     # Try regeneration first (if provided)
     if regen_fn is not None:
         try:
             regen_kwargs = regen_kwargs or {}
+
+            # If placeholder files are present, remove them so the image agent won't treat
+            # them as "already generated" and skip regeneration.
+            for p in expected:
+                try:
+                    if _is_same_file(p, placeholder_disk):
+                        p.unlink(missing_ok=True)
+                except Exception:
+                    pass
+
             hero_obj = regen_fn(**regen_kwargs)
 
             # If regen succeeded, ensure the canonical files exist.
             # Some pipelines may only generate `hero.webp`. If so, we still backfill others via placeholder.
             expected_after = expected
             for p in expected_after:
-                if _missing_or_empty(p):
+                if _missing_or_placeholder(p):
                     # Regen did not create all expected assets.
                     # We'll fall through and backfill missing ones with placeholder.
                     print(
@@ -99,16 +136,8 @@ def ensure_hero_assets_exist(
             print(traceback.format_exc())
             pass
 
-    # Placeholder backfill (deterministic)
-    placeholder_disk = _disk_path(public_dir, placeholder_url)
-    if not placeholder_disk.exists():
-        raise FileNotFoundError(
-            f"Placeholder hero missing at {placeholder_disk}. "
-            f"Create it (e.g. site/public/images/placeholder-hero.webp) so self-heal can backfill."
-        )
-
     for p in expected:
-        if _missing_or_empty(p):
+        if _missing_or_placeholder(p):
             _ensure_parent(p)
             shutil.copyfile(placeholder_disk, p)
 

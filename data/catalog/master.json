@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-01-31T21:50:47Z",
+  "updated_at": "2026-02-01T22:21:23Z",
   "items": {
     "amazon_uk:snake-plant-sansevieria-indoor-potted-plant": {
       "provider": "amazon_uk",
@@ -633,6 +633,105 @@
       "provider": "amazon_uk",
       "status": "ok",
       "title": "Outdoor Ventures Softshell Ladies Rain Jacket",
+      "affiliate_url": "",
+      "rating": 0.0,
+      "reviews_count": 0,
+      "price": "",
+      "asin": "",
+      "notes": ""
+    },
+    "amazon_uk:pro-breeze-12lday-dehumidifier-with-automatic-humidity-sensor-display": {
+      "provider": "amazon_uk",
+      "status": "ok",
+      "title": "Pro Breeze® 12L/Day Dehumidifier with Automatic Humidity Sensor & Display",
+      "affiliate_url": "",
+      "rating": 0.0,
+      "reviews_count": 0,
+      "price": "",
+      "asin": "",
+      "notes": ""
+    },
+    "amazon_uk:pro-breeze-20lday-dehumidifier-with-digital-humidity-display": {
+      "provider": "amazon_uk",
+      "status": "ok",
+      "title": "Pro Breeze® 20L/Day Dehumidifier with Digital Humidity Display",
+      "affiliate_url": "",
+      "rating": 0.0,
+      "reviews_count": 0,
+      "price": "",
+      "asin": "",
+      "notes": ""
+    },
+    "amazon_uk:max-25ld-dehumidifier-for-home": {
+      "provider": "amazon_uk",
+      "status": "ok",
+      "title": "Max 25L/d Dehumidifier for Home",
+      "affiliate_url": "",
+      "rating": 0.0,
+      "reviews_count": 0,
+      "price": "",
+      "asin": "",
+      "notes": ""
+    },
+    "amazon_uk:hillington-dehumidifier-bag-reusable-2-pack-moisture-absorbers": {
+      "provider": "amazon_uk",
+      "status": "ok",
+      "title": "Hillington Dehumidifier Bag Reusable - 2-Pack Moisture Absorbers",
+      "affiliate_url": "",
+      "rating": 0.0,
+      "reviews_count": 0,
+      "price": "",
+      "asin": "",
+      "notes": ""
+    },
+    "amazon_uk:ansio-dehumidifier-disposable-pack-of-10-room-moisture-absorber": {
+      "provider": "amazon_uk",
+      "status": "ok",
+      "title": "ANSIO Dehumidifier Disposable Pack of 10 Room Moisture Absorber",
+      "affiliate_url": "",
+      "rating": 0.0,
+      "reviews_count": 0,
+      "price": "",
+      "asin": "",
+      "notes": ""
+    },
+    "amazon_uk:thermopro-tp50-digital-thermo-hygrometer": {
+      "provider": "amazon_uk",
+      "status": "ok",
+      "title": "ThermoPro TP50 Digital Thermo-Hygrometer",
+      "affiliate_url": "",
+      "rating": 0.0,
+      "reviews_count": 0,
+      "price": "",
+      "asin": "",
+      "notes": ""
+    },
+    "amazon_uk:noklead-hygrometer-indoor-thermometer": {
+      "provider": "amazon_uk",
+      "status": "ok",
+      "title": "NOKLEAD Hygrometer Indoor Thermometer",
+      "affiliate_url": "",
+      "rating": 0.0,
+      "reviews_count": 0,
+      "price": "",
+      "asin": "",
+      "notes": ""
+    },
+    "amazon_uk:mould-stain-remover-gel-cleaner-active-heavy-duty-stain-cleaner": {
+      "provider": "amazon_uk",
+      "status": "ok",
+      "title": "Mould Stain Remover Gel Cleaner - ACTIVE Heavy Duty Stain Cleaner",
+      "affiliate_url": "",
+      "rating": 0.0,
+      "reviews_count": 0,
+      "price": "",
+      "asin": "",
+      "notes": ""
+    },
+    "amazon_uk:hg-mould-spray-effective-black-mould-mildew-cleaner": {
+      "provider": "amazon_uk",
+      "status": "ok",
+      "title": "HG Mould Spray - Effective Black Mould & Mildew Cleaner",
       "affiliate_url": "",
       "rating": 0.0,
       "reviews_count": 0,

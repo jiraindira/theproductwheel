@@ -5,6 +5,7 @@ from typing import Optional
 
 from agents.image_generation_agent import ImageGenerationAgent
 from pipeline.hero_self_heal import ensure_hero_assets_exist
+from schemas.hero_image import HeroImageRequest
 
 
 @dataclass(frozen=True)
@@ -31,14 +32,14 @@ def generate_hero_image(
 
     This should be the "happy path" generation. If it raises, the caller may self-heal.
     """
-    req = {
-        "slug": slug,
-        "category": category,
-        "title": title,
-        "intro": intro,
-        "picks": picks,
-        "alternatives": alternatives,
-    }
+    req = HeroImageRequest(
+        slug=slug,
+        category=category,
+        title=title,
+        intro=intro,
+        picks=picks,
+        alternatives=alternatives,
+    )
 
     out = agent.run(req)
 

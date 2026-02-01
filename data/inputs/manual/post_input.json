@@ -1,73 +1,81 @@
 {
-  "category": "travel",
-  "subcategory": "umbrellas_ponchos_raincoats",
+  "category": "home",
+  "subcategory": "Dehumidifier",
   "audience": "UK shoppers",
-  "seed_title": "Travel rain gear essentials",
-  "seed_description": "A short, practical guide for UK travellers on what to pack for wet weather. Keep it UK-general (don’t overfit to London).",
+  "seed_title": "Dehumidified, Not Just Dry: Protecting Your Home From Mould and Damp",
+  "seed_description": "long rainy season doesn’t stop at wet coats. It creeps into walls, windows, and air, turning homes damp and encouraging mould that’s especially tough on children’s health. A dehumidified home isn’t about comfort, it’s about breaking the cycle before moisture becomes a problem",
   "source_url": "https://www.amazon.co.uk/s?k=rainware&crid=1K6ZAKXWPXO3C&sprefix=rainwate%2Caps%2C134&ref=nb_sb_noss_2",
   "products": [
     {
-      "name": "Golf Umbrella Windproof Large 62/68 Inch, Double Canopy Vented",
-      "url": "https://amzn.to/3M0XYAE",
+      "name": "Pro Breeze® 12L/Day Dehumidifier with Automatic Humidity Sensor & Display",
+      "url": "https://amzn.to/4qRcNVA",
       "rating": 4.6,
-      "reviews_count": 12714,
-      "price": "£23.99",
+      "reviews_count": 10801,
+      "price": "£99.99",
       "status": "ok"
     },
     {
-      "name": "Repel Umbrella Windproof Travel Umbrellas - Compact and Fiberglass Frame",
-      "url": "https://amzn.to/4akYQJQ",
-      "rating": 4.3,
-      "reviews_count": 102129,
+      "name": "Pro Breeze® 20L/Day Dehumidifier with Digital Humidity Display",
+      "url": "https://amzn.to/4rt2vLn",
+      "rating": 4.6,
+      "reviews_count": 10801,
+      "price": "£139.99",
+      "status": "ok"
+    },
+    {
+      "name": "Max 25L/d Dehumidifier for Home",
+      "url": "https://amzn.to/4tdCS2G",
+      "rating": 4.6,
+      "reviews_count": 4538,
+      "price": "£119",
+      "status": "ok"
+    },
+    {
+      "name": "Hillington Dehumidifier Bag Reusable - 2-Pack Moisture Absorbers",
+      "url": "https://amzn.to/4kcq9JH",
+      "rating": 4.2,
+      "reviews_count": 8798,
       "price": "£19.99",
       "status": "ok"
     },
     {
-      "name": "Fulton Huntsman Umbrella Black",
-      "url": "https://amzn.to/4q9eyfR",
+      "name": "ANSIO Dehumidifier Disposable Pack of 10 Room Moisture Absorber",
+      "url": "https://amzn.to/4t9Oq7e",
+      "rating": 4.3,
+      "reviews_count": 48847,
+      "price": "£9.93",
+      "status": "ok"
+    },
+    {
+      "name": "ThermoPro TP50 Digital Thermo-Hygrometer",
+      "url": "https://amzn.to/4ruzsqY",
       "rating": 4.5,
-      "reviews_count": 1324,
-      "price": "£26.88",
+      "reviews_count": 136134,
+      "price": "£7.99",
       "status": "ok"
     },
     {
-      "name": "Victoper Adult Lightweight Waterproof Raincoat",
-      "url": "https://amzn.to/3LS43iZ",
-      "rating": 4.4,
-      "reviews_count": 2136,
-      "price": "£14.99",
-      "status": "ok"
-    },
-    {
-      "name": "ANYOO Waterproof Rain Poncho Lightweight Reusable",
-      "url": "https://amzn.to/4tpLRhJ",
-      "rating": 4.4,
-      "reviews_count": 20985,
-      "price": "£18.99",
-      "status": "ok"
-    },
-    {
-      "name": "Kids Raincoats Rain Poncho",
-      "url": "https://amzn.to/49OtDhX",
+      "name": "NOKLEAD Hygrometer Indoor Thermometer",
+      "url": "https://amzn.to/3ZfgfNN",
       "rating": 4.5,
-      "reviews_count": 1047,
-      "price": "£13.90",
+      "reviews_count": 35518,
+      "price": "£12.99",
       "status": "ok"
     },
     {
-      "name": "Cosowe Rain Poncho Raincoats for Adults",
-      "url": "https://amzn.to/3NXuJzm",
-      "rating": 4.4,
-      "reviews_count": 4481,
-      "price": "£8.97",
+      "name": "Mould Stain Remover Gel Cleaner - ACTIVE Heavy Duty Stain Cleaner",
+      "url": "https://amzn.to/4riTAw2",
+      "rating": 4.2,
+      "reviews_count": 21267,
+      "price": "£11.01",
       "status": "ok"
     },
     {
-      "name": "Outdoor Ventures Softshell Ladies Rain Jacket",
-      "url": "https://amzn.to/3ZapD5i",
-      "rating": 4.5,
-      "reviews_count": 2451,
-      "price": "£57.99",
+      "name": "HG Mould Spray - Effective Black Mould & Mildew Cleaner",
+      "url": "https://amzn.to/4tdORgL",
+      "rating": 4.6,
+      "reviews_count": 42432,
+      "price": "£4.32",
       "status": "ok"
     }
   ]
