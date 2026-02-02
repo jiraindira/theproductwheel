@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { getTaxonomy } from "../lib/taxonomy";
+import BackToTop from "../components/BackToTop.astro";
 
 const taxonomy = await getTaxonomy();
 
@@ -122,6 +123,8 @@ const BRAND_ICON_SRC = "/brand/logo-icon.png";
         </div>
       </div>
     </footer>
+
+    <BackToTop />
 
     <div
       id="cookie-banner"

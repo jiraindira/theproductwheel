@@ -1,6 +1,9 @@
 ---
 const { items = [], active = "all" } = Astro.props;
 // items: [{ key, label, href, count }]
+import TopicIcon from "./TopicIcon.astro";
+
+const iconClass = "h-5 w-5";
 ---
 
 <nav aria-label="Browse topics">
@@ -12,8 +15,13 @@ const { items = [], active = "all" } = Astro.props;
           <a
             href={it.href}
             aria-current={isActive ? "page" : undefined}
+            aria-label={
+              typeof it.count === "number"
+                ? `${it.label} (${it.count})`
+                : String(it.label)
+            }
             class:list={[
-              "group inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-semibold",
+              "group inline-flex items-center gap-3 rounded-full px-3 py-2 font-semibold",
               "border transition-colors",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2",
               isActive
@@ -21,7 +29,17 @@ const { items = [], active = "all" } = Astro.props;
                 : "border-gray-200 bg-white text-gray-900 hover:border-gray-300 hover:bg-gray-50",
             ]}
           >
-            <span class="tracking-tight">{it.label}</span>
+            <span class="flex flex-col items-center leading-none">
+              <TopicIcon name={it.key} className={iconClass} />
+              <span
+                class:list={[
+                  "sr-only md:not-sr-only md:mt-1 md:block md:text-[11px] md:font-semibold md:tracking-tight",
+                  isActive ? "md:text-white/90" : "md:text-gray-700",
+                ]}
+              >
+                {it.label}
+              </span>
+            </span>
             {typeof it.count === "number" ? (
               <span
                 class:list={[
