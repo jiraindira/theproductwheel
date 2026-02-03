@@ -234,7 +234,7 @@ No changes required.
 - Experimental homepage renders locally
 - Existing homepage untouched
 - Experimental layout can be removed cleanly
-- No git commit performed
+- Changes are committed to `ux-experiment` (and not merged to `main` until approved)
 - No regressions to production layout
 - Visual hierarchy clearly communicates:
   1. What this site is
