@@ -3,7 +3,7 @@
 Site: theproductwheel.com  
 Scope: Homepage only  
 Status: Experimental (non-destructive)  
-Execution: Local testing only, no git commit
+Execution: Implement on `ux-experiment` branch (safe to commit)
 
 ---
 
@@ -22,11 +22,8 @@ The goal is to evaluate whether an editorial-first, hierarchy-driven layout perf
 
 ## Critical Constraints (Non-Negotiable)
 
-- **Do NOT replace** the current homepage layout
-- **Do NOT remove or modify** the existing homepage file
-- **Do NOT commit to git**
-- **Local testing only**
-- New layout must be removable without refactoring existing components
+- **Homepage-only** changes (do not modify `/posts` or post templates)
+- Keep changes easy to revert (single component + isolated homepage wiring)
 - No schema, content, or data model changes
 
 ---
@@ -34,16 +31,15 @@ The goal is to evaluate whether an editorial-first, hierarchy-driven layout perf
 ## Implementation Strategy
 
 ### Required
-- Create a **new homepage variant**, e.g.:
-  - `/experimental`
-  - `/home-v2`
-  - `/__test/home`
-- Or a feature-flagged layout switch (default OFF)
+- Implement changes on the `ux-experiment` branch.
+- Keep changes isolated to:
+  - homepage wiring (`site/src/pages/index.astro`)
+  - a dedicated component for the modal
+  - minimal styling adjustments for the disclosure banner
 
 ### Forbidden
-- Editing the existing homepage in-place
-- Introducing shared logic that risks regressions
-- Changing routing behavior for `/`
+- Changing content schemas/models
+- Introducing cross-site behavior changes unrelated to the experiment
 
 ---
 
@@ -53,15 +49,12 @@ The goal is to evaluate whether an editorial-first, hierarchy-driven layout perf
 The affiliate disclaimer **must retain its exact current wording**.
 
 ### Behavior
-- First attempt:
-  - Move disclaimer to the **footer**, visible on all pages
-- If Amazon compliance does not allow footer-only placement:
-  - Keep disclaimer at top of experimental homepage
-  - Make it:
-    - Smaller font
-    - Lighter background
-    - Reduced contrast
-    - Visually subordinate to hero
+- Keep disclaimer at the top (site header).
+- Make it visually quieter:
+  - smaller font
+  - lighter background
+  - reduced contrast
+  - visually subordinate to hero
 
 ### Acceptance Criteria
 - Wording is unchanged
@@ -120,14 +113,17 @@ Replace category pills with a single intentional entry point.
 - Introduce **“View Categories”** button
 
 ### Behavior
-- Button opens lightweight selector (dropdown or modal)
-- Categories listed without counts
+- Button opens a lightweight modal
+- Categories listed **with counts** formatted like `(7)`
+- Modal has an explicit **X** close button
 - No filtering UI visible by default
 
 ### Acceptance Criteria
 - No category pills visible
 - Exactly one category entry control exists
 - Categories are discoverable but not dominant
+- Counts are shown as `(N)`
+- Close affordance includes a clear X button
 
 ---
 

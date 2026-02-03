@@ -2,7 +2,7 @@
 import SiteLayout from "../layouts/SiteLayout.astro";
 import FeaturedGuide from "../components/FeaturedGuide.astro";
 import LatestList from "../components/LatestList.astro";
-import TopTopicsNav from "../components/TopTopicsNav.astro";
+import ViewCategoriesModal from "../components/ViewCategoriesModal.astro";
 import GuideCard from "../components/GuideCard.astro";
 import { getCollection } from "astro:content";
 import { getTaxonomy } from "../lib/taxonomy";
@@ -92,8 +92,8 @@ const hp = taxonomy.homepage ?? {
   <p class="sr-only">Independent product buying guides and recommendations</p>
 
   <div class="max-w-6xl mx-auto px-6 pt-12">
-    <!-- TOPICS (taxonomy-driven) -->
-    <TopTopicsNav items={navItems} active="all" />
+    <!-- CATEGORIES (single entry point) -->
+    <ViewCategoriesModal items={navItems} active="all" dialogId="home-categories-dialog" />
 
     <!-- MAIN EDITORIAL STRIP -->
     <section class="mt-12">

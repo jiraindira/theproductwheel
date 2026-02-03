@@ -1,0 +1,120 @@
+---
+const {
+  items = [],
+  active = "all",
+  buttonLabel = "View categories",
+  dialogId = "view-categories-dialog",
+} = Astro.props;
+
+// items: [{ key, label, href, count }]
+const labelWithCount = (it) =>
+  typeof it?.count === "number" ? `${it.label} (${it.count})` : String(it?.label ?? "");
+---
+
+<div class="flex items-center">
+  <button
+    type="button"
+    class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+    data-open-categories={dialogId}
+  >
+    {buttonLabel}
+    <span aria-hidden="true" class="text-gray-400">▾</span>
+  </button>
+
+  <dialog
+    id={dialogId}
+    class="w-[min(620px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-gray-200 bg-white p-0 shadow-2xl backdrop:bg-black/30"
+    aria-label="Browse categories"
+  >
+    <div class="p-5 sm:p-6">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h2 class="text-base font-semibold text-gray-900">Categories</h2>
+          <p class="mt-1 text-sm text-gray-600">
+            Jump to a guide group. Counts reflect available posts.
+          </p>
+        </div>
+
+        <form method="dialog">
+          <button
+            type="submit"
+            value="close"
+            class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 transition hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+            aria-label="Close"
+          >
+            <span aria-hidden="true" class="text-xl leading-none">×</span>
+          </button>
+        </form>
+      </div>
+
+      <div class="mt-5">
+        <ul class="divide-y divide-gray-100">
+          {items.map((it) => {
+            const isActive = active === it.key;
+            return (
+              <li>
+                <a
+                  href={it.href}
+                  class:list={[
+                    "flex items-center justify-between gap-4 py-3 text-sm font-semibold transition",
+                    isActive ? "text-blue-700" : "text-gray-900 hover:text-gray-950",
+                  ]}
+                >
+                  <span>{it.label}</span>
+                  {typeof it.count === "number" ? (
+                    <span class="text-gray-600">({it.count})</span>
+                  ) : (
+                    <span class="sr-only">{labelWithCount(it)}</span>
+                  )}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <div class="mt-5 flex items-center justify-end">
+        <form method="dialog">
+          <button
+            type="submit"
+            value="close"
+            class="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-900 transition hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+          >
+            Close
+          </button>
+        </form>
+      </div>
+    </div>
+  </dialog>
+</div>
+
+<script define:vars={{ dialogId }}>
+  (() => {
+    const dialog = document.getElementById(dialogId);
+    if (!(dialog instanceof HTMLDialogElement)) return;
+
+    const openBtn = document.querySelector(`[data-open-categories="${dialogId}"]`);
+    if (!(openBtn instanceof HTMLButtonElement)) return;
+
+    const open = () => {
+      try {
+        dialog.showModal();
+      } catch {
+        // If showModal is blocked, fall back to non-modal.
+        dialog.show();
+      }
+    };
+
+    openBtn.addEventListener("click", open);
+
+    // Close when clicking the backdrop.
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) dialog.close("backdrop");
+    });
+
+    // Optional: close after navigation.
+    dialog.addEventListener("close", () => {
+      // no-op; keeps state predictable
+    });
+  })();
+</script>
