@@ -1,10 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { Image } from "astro:assets";
-import { groupForCategory, categoryLabel } from "../lib/taxonomy";
 import { getPostHeroImage } from "../lib/postImages";
-import { normalizePostCategories, primaryCategory } from "../lib/normalizeCategories";
-import { getPostCardDescription } from "../lib/postExcerpt";
 
 const { post, taxonomy } = Astro.props as {
   post: CollectionEntry<"posts">;
@@ -17,18 +14,13 @@ function formatDate(d: Date) {
   try {
     return new Date(d).toLocaleDateString("en-GB", {
       day: "2-digit",
-      month: "long",
+      month: "short",
       year: "numeric",
     });
   } catch {
     return "";
   }
 }
-
-// ✅ Canonical categories (works for both legacy + new)
-const categories = normalizePostCategories(post, taxonomy);
-const primary = primaryCategory(post, taxonomy);
-const g = groupForCategory(taxonomy, primary);
 
 // Prefer a homepage crop if present
 const heroImageRaw = (() => {
@@ -53,67 +45,43 @@ const safeHeroAlt =
     ? post.data.heroAlt.trim()
     : post?.data?.title ?? "";
 
-// Render up to 2 category labels, then +N
-const metaCats = categories.slice(0, 2);
-const extraCount = categories.length > 2 ? categories.length - 2 : 0;
-
-// Hero styling: match our generated hero aspect (16:9) for cleaner crops
-const HERO_CLASS = "w-full aspect-video object-cover bg-gray-50";
-
-const cardDescription = getPostCardDescription(post);
+// Mobile-first hero: taller aspect on small screens
+const HERO_WRAP_CLASS = "relative w-full overflow-hidden bg-gray-50 aspect-[4/5] sm:aspect-video";
+const HERO_IMG_CLASS = "absolute inset-0 h-full w-full object-cover";
 ---
 
-<a href={`/posts/${post.slug}`} class="block">
-  <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+<a
+  href={`/posts/${post.slug}`}
+  class="group block w-screen mx-[calc(50%-50vw)] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+  aria-label={post.data.title}
+>
+  <div class={HERO_WRAP_CLASS}>
     {isPublicHero ? (
-      <img src={heroImageRaw} alt={safeHeroAlt} class={HERO_CLASS} loading="eager" decoding="async" />
+      <img src={heroImageRaw} alt={safeHeroAlt} class={HERO_IMG_CLASS} loading="eager" decoding="async" />
     ) : heroAsset ? (
       <Image
         src={heroAsset}
         alt={safeHeroAlt}
         width={heroAsset.width}
         height={heroAsset.height}
-        class={HERO_CLASS}
-        sizes="(min-width: 1024px) 900px, 100vw"
+        class={HERO_IMG_CLASS}
+        sizes="100vw"
         loading="eager"
         decoding="async"
       />
     ) : null}
 
-    <div class="p-7 sm:p-8">
-      <div class="flex flex-wrap items-center gap-2">
-        {g ? (
-          <span class="inline-flex items-center rounded-full bg-gray-900 px-3 py-1 text-xs font-semibold text-white">
-            {g.label}
-          </span>
-        ) : null}
-
-        {metaCats.map((c) => (
-          <span class="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-900">
-            {categoryLabel(taxonomy, c) || c}
-          </span>
-        ))}
-
-        {extraCount > 0 ? (
-          <span class="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700">
-            +{extraCount}
-          </span>
-        ) : null}
-      </div>
-
-      <h2 class="mt-4 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
-        {post.data.title}
-      </h2>
-
-      {cardDescription ? (
-        <p class="mt-3 text-base leading-relaxed text-gray-700 sm:text-lg">
-          {cardDescription}
-        </p>
-      ) : null}
-
-      <div class="mt-5 flex items-center justify-between gap-6 text-sm text-gray-600">
-        <span class="font-semibold text-gray-900">Read guide →</span>
-        <span>{formatDate(post.data.publishedAt)}</span>
+    <div class="absolute inset-x-0 bottom-0">
+      <div class="h-28 bg-gradient-to-t from-black/70 via-black/35 to-transparent sm:h-32"></div>
+      <div class="absolute inset-x-0 bottom-0 p-5 sm:p-7">
+        <div class="max-w-6xl mx-auto px-0 sm:px-6">
+          <div class="text-xs font-semibold tracking-wide text-white/85">
+            {formatDate(post.data.publishedAt)}
+          </div>
+          <h2 class="mt-2 text-2xl font-semibold leading-tight tracking-tight text-white sm:text-4xl">
+            {post.data.title}
+          </h2>
+        </div>
       </div>
     </div>
   </div>
