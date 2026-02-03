@@ -45,8 +45,8 @@ const safeHeroAlt =
     ? post.data.heroAlt.trim()
     : post?.data?.title ?? "";
 
-// Mobile-first hero: taller aspect on small screens
-const HERO_WRAP_CLASS = "relative w-full overflow-hidden bg-gray-50 aspect-[4/5] sm:aspect-video";
+// Mobile-first hero: keep it punchy (shorter on small screens)
+const HERO_WRAP_CLASS = "relative w-full overflow-hidden bg-gray-50 aspect-video sm:aspect-video";
 const HERO_IMG_CLASS = "absolute inset-0 h-full w-full object-cover";
 ---
 
