@@ -1,0 +1,67 @@
+---
+const { products = [] } = Astro.props;
+
+function stripPrice(p) {
+  if (!p) return null;
+  return String(p).trim();
+}
+
+function hostname(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
+---
+
+<div class="overflow-x-auto rounded-2xl border border-gray-200 bg-white">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-700">
+      <tr>
+        <th class="text-left font-semibold px-4 py-3 w-[40%]">Product</th>
+        <th class="text-left font-semibold px-4 py-3 whitespace-nowrap">Rating</th>
+        <th class="text-left font-semibold px-4 py-3 whitespace-nowrap">Reviews</th>
+        <th class="text-left font-semibold px-4 py-3 whitespace-nowrap">Price</th>
+        <th class="text-right font-semibold px-4 py-3 whitespace-nowrap">Link</th>
+      </tr>
+    </thead>
+
+    <tbody class="divide-y divide-gray-200">
+      {products.map((p) => (
+        <tr>
+          <td class="px-4 py-3">
+            <div class="font-semibold text-gray-900 leading-snug">{p.title}</div>
+            {p.description && (
+              <div class="mt-1 text-xs text-gray-600 line-clamp-2">{p.description}</div>
+            )}
+          </td>
+
+          <td class="px-4 py-3 text-gray-900 whitespace-nowrap">
+            {typeof p.rating === "number" ? `${p.rating.toFixed(1)}★` : "—"}
+          </td>
+
+          <td class="px-4 py-3 text-gray-900 whitespace-nowrap">
+            {typeof p.reviews_count === "number" ? p.reviews_count.toLocaleString() : "—"}
+          </td>
+
+          <td class="px-4 py-3 text-gray-900 whitespace-nowrap">
+            {stripPrice(p.price) ?? "—"}
+          </td>
+
+          <td class="px-4 py-3 text-right whitespace-nowrap">
+            <a
+              href={p.url}
+              target="_blank"
+              rel="sponsored nofollow noopener"
+              class="font-semibold text-blue-600 hover:text-blue-700"
+            >
+              Check price →
+            </a>
+            <div class="mt-1 text-xs text-gray-400">{hostname(p.url)}</div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

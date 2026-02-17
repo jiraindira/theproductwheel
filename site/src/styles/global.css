@@ -1,0 +1,203 @@
+/* site/src/styles/global.css */
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Helvetica,
+    Arial,
+    "Apple Color Emoji",
+    "Segoe UI Emoji";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  color: rgba(17, 24, 39, 0.92);
+  background: #f7f7f8;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make anchor jumps feel nice with sticky header */
+:target {
+  scroll-margin-top: 84px;
+}
+
+/* Basic link styling */
+a {
+  color: inherit;
+}
+
+/* Optional: nicer focus ring */
+:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.55);
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+/* Optional: keep long strings from breaking layout */
+pre,
+code {
+  overflow-wrap: break-word;
+}
+
+/* --------------------------------------------------
+   Step 4: Methodology / trust callout
+-------------------------------------------------- */
+
+.callout.callout--methodology {
+  margin: 1.25rem 0;
+  padding: 1rem 1rem 1rem 1.1rem;
+
+  background: rgba(17, 24, 39, 0.035);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-left: 3px solid rgba(17, 24, 39, 0.18);
+  border-radius: 14px;
+}
+
+.callout.callout--methodology > h2,
+.callout.callout--methodology > h3 {
+  margin-top: 0;
+}
+
+.callout.callout--methodology > h2:first-child::before,
+.callout.callout--methodology > h3:first-child::before {
+  content: "Methodology";
+  display: block;
+
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+
+  margin-bottom: 0.35rem;
+}
+
+.callout.callout--methodology p {
+  margin: 0.6rem 0;
+}
+
+/* Tailwind preflight removes list markers. Restore them inside callouts. */
+.callout.callout--methodology ul,
+.callout.callout--methodology ol {
+  margin: 0.6rem 0 0.25rem;
+  padding-left: 1.25rem;
+
+  list-style-position: outside;
+}
+
+.callout.callout--methodology ul {
+  list-style-type: disc;
+}
+
+.callout.callout--methodology ol {
+  list-style-type: decimal;
+}
+
+.callout.callout--methodology li {
+  margin: 0.35rem 0;
+}
+
+/* --------------------------------------------------
+   Picks: calm inline layout (no card, no right CTA)
+-------------------------------------------------- */
+
+.pick-rating {
+  margin: 0.35rem 0 0.6rem; /* slightly tighter */
+  font-size: 0.98rem;
+  color: rgba(17, 24, 39, 0.72);
+}
+
+.pick {
+  margin: 0.25rem 0 2rem;
+}
+
+.pick-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+
+.pick-tile {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  
+  margin-top: 0.25rem; /* optical alignment with first text line */
+  
+  border-radius: 14px;
+  background: rgba(17, 24, 39, 0.04);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+
+  display: grid;
+  place-items: center;
+
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgba(17, 24, 39, 0.8);
+}
+
+.pick-body {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 1rem;
+  row-gap: 0.5rem;
+}
+
+.pick-meta {
+  font-size: 0.92rem;
+  color: rgba(17, 24, 39, 0.55);
+  margin-bottom: 0.35rem;
+}
+
+.pick-body p {
+  grid-column: 1 / 2;
+  margin: 0;
+}
+
+.pick-cta-row {
+  grid-column: 2 / 3;
+  align-self: start;
+  margin-top: 0.15rem;
+}
+
+.pick-cta {
+  display: inline-block;
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  text-decoration: none;
+
+  border: 1px solid rgba(17, 24, 39, 0.14);
+  background: rgba(17, 24, 39, 0.03);
+}
+
+.pick-cta:hover {
+  background: rgba(17, 24, 39, 0.06);
+}

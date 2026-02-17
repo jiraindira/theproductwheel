@@ -1,0 +1,184 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import { groupForCategory, categoryLabel } from "../lib/taxonomy";
+import { getPostHeroImage } from "../lib/postImages";
+import { normalizePostCategories, primaryCategory } from "../lib/normalizeCategories";
+import { getPostCardDescription } from "../lib/postExcerpt";
+
+const { post: rawPost, taxonomy: rawTaxonomy } = Astro.props as {
+  post?: CollectionEntry<"posts">;
+  taxonomy?: any;
+};
+
+const post = rawPost ?? null;
+
+const taxonomy = rawTaxonomy && typeof rawTaxonomy === "object" ? rawTaxonomy : null;
+const hasTaxonomyGroups = !!(taxonomy && (taxonomy as any).groups);
+
+const FALLBACK_HERO = "/images/placeholder-hero.webp";
+
+function isAbsoluteUrl(v: string) {
+  return /^https?:\/\//i.test(v);
+}
+
+function formatDate(d: unknown) {
+  try {
+    if (!d) return "";
+    return new Date(d as any).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  } catch {
+    return "";
+  }
+}
+
+function safeCategoryLabel(cat: string) {
+  if (!hasTaxonomyGroups) return null;
+  try {
+    return categoryLabel(taxonomy, cat);
+  } catch {
+    return null;
+  }
+}
+
+// ✅ Canonical categories (works for both legacy + new)
+let categories: string[] = [];
+if (post) {
+  try {
+    categories = normalizePostCategories(post, taxonomy ?? undefined);
+  } catch {
+    categories = [];
+  }
+}
+
+const primary: string | null = (() => {
+  if (!post) return null;
+  try {
+    return primaryCategory(post, taxonomy ?? undefined);
+  } catch {
+    return categories[0] ?? null;
+  }
+})();
+
+const g = (() => {
+  if (!hasTaxonomyGroups || !primary) return null;
+  try {
+    return groupForCategory(taxonomy, primary);
+  } catch {
+    return null;
+  }
+})();
+
+// ✅ KEEP ONLY THIS ONE HERO BLOCK (delete all duplicated copies below in your file)
+// Remove DEV-only border marker (keep the fixed containment classes)
+const HERO_WRAP_CLASS = "relative w-full overflow-hidden bg-gray-100 aspect-video";
+const HERO_IMG_CLASS = "absolute inset-0 h-full w-full object-cover object-center";
+
+const heroImageRaw = (() => {
+  if (!post) return FALLBACK_HERO;
+
+  const preferred =
+    typeof post.data?.heroImageHome === "string" && post.data.heroImageHome.trim().length > 0
+      ? post.data.heroImageHome.trim()
+      : null;
+
+  const fallback =
+    typeof post.data?.heroImage === "string" && post.data.heroImage.trim().length > 0
+      ? post.data.heroImage.trim()
+      : null;
+
+  return preferred || fallback || FALLBACK_HERO;
+})();
+
+const isPublicHero = heroImageRaw.startsWith("/") || isAbsoluteUrl(heroImageRaw);
+
+const heroAsset = (() => {
+  if (isPublicHero) return null;
+  try {
+    return getPostHeroImage(heroImageRaw);
+  } catch {
+    return null;
+  }
+})();
+
+const heroPublicSrc = isPublicHero ? heroImageRaw : FALLBACK_HERO;
+
+const safeHeroAlt =
+  post && typeof post.data?.heroAlt === "string" && post.data.heroAlt.trim().length > 0
+    ? post.data.heroAlt.trim()
+    : post?.data?.title ?? "";
+
+const cardDescription = post ? getPostCardDescription(post) : "";
+
+// ✅ KEEP ONLY THIS ONE META BLOCK (delete all duplicated copies below in your file)
+const metaCats = categories.slice(0, 2);
+const extraCount = categories.length > 2 ? categories.length - 2 : 0;
+
+// NOTE: Delete the large repeated sections that start re-declaring
+// `heroImageRaw`, `isPublicHero`, `heroAsset`, `safeHeroAlt`, `metaCats`, etc.
+---
+
+{post ? (
+  <a href={`/posts/${post.slug}`} class="block">
+    <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+      <div class={HERO_WRAP_CLASS}>
+        {isPublicHero ? (
+          <img src={heroPublicSrc} alt={safeHeroAlt} class={HERO_IMG_CLASS} loading="eager" decoding="async" />
+        ) : heroAsset ? (
+          <Image
+            src={heroAsset}
+            alt={safeHeroAlt}
+            width={heroAsset.width}
+            height={heroAsset.height}
+            class={HERO_IMG_CLASS}
+            sizes="(min-width: 1024px) 900px, 100vw"
+            loading="eager"
+            decoding="async"
+          />
+        ) : (
+          <img src={FALLBACK_HERO} alt={safeHeroAlt} class={HERO_IMG_CLASS} loading="eager" decoding="async" />
+        )}
+      </div>
+
+      <div class="p-5 sm:p-6">
+        <div class="flex flex-wrap items-center gap-2">
+          {g ? (
+            <span class="inline-flex items-center rounded-full bg-gray-900 px-3 py-1 text-xs font-semibold text-white">
+              {g.label}
+            </span>
+          ) : null}
+
+          {metaCats.map((c) => (
+            <span class="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-900">
+              {safeCategoryLabel(c) || c}
+            </span>
+          ))}
+
+          {extraCount > 0 ? (
+            <span class="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700">
+              +{extraCount}
+            </span>
+          ) : null}
+        </div>
+
+        <h2 class="mt-3 text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
+          {post.data.title}
+        </h2>
+
+        {cardDescription ? (
+          <p class="mt-2 text-sm leading-relaxed text-gray-700 sm:text-base">
+            {cardDescription}
+          </p>
+        ) : null}
+
+        <div class="mt-4 flex items-center justify-between gap-6 text-sm text-gray-600">
+          <span class="font-semibold text-gray-900">Read guide →</span>
+          <span>{formatDate(post.data.publishedAt)}</span>
+        </div>
+      </div>
+    </div>
+  </a>
+) : null}

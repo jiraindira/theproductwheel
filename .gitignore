@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+.venv_validate/
+
+# Local env
+.env
+
+# Generated outputs
+output/
+archive/outputs/
+site/dist/
+site/.astro/
+site/node_modules/

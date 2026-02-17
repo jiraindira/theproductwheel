@@ -1,0 +1,158 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import FeaturedGuide from "../components/FeaturedGuide.astro";
+import CategoryChip from "../components/CategoryChip.astro";
+import CategoryPlacecard from "../components/CategoryPlacecard.astro";
+import HomePostCard from "../components/HomePostCard.astro";
+import { getCollection } from "astro:content";
+import { getTaxonomy } from "../lib/taxonomy";
+import { normalizePostCategories } from "../lib/normalizeCategories";
+
+const taxonomy = await getTaxonomy();
+
+const posts = await getCollection("posts");
+
+// optional: keep debug noise out of prod
+if (import.meta.env.DEV) {
+  console.log(
+    "DEBUG post categories:",
+    posts.map((p) => ({
+      slug: p.slug,
+      category: p.data.category,
+      categories: p.data.categories,
+    })),
+  );
+}
+
+posts.sort((a, b) => {
+  const t = b.data.publishedAt.getTime() - a.data.publishedAt.getTime();
+  if (t !== 0) return t;
+  return b.slug.localeCompare(a.slug);
+});
+
+// ✅ Count a post if ANY of its categories intersects the group
+const countsByGroup = taxonomy.groups.reduce((acc, g) => {
+  const groupCats = (g.categoryIds ?? g.categories ?? [])
+    .map((c) => String(c || "").trim().toLowerCase())
+    .filter(Boolean);
+
+  acc[g.key] = posts.filter((post) =>
+    normalizePostCategories(post, taxonomy).some((c) => groupCats.includes(c)),
+  ).length;
+
+  return acc;
+}, /** @type {Record<string, number>} */ ({}));
+
+const navItems = [
+  { key: "all", label: "All", count: posts.length, href: "/posts" },
+  ...taxonomy.groups
+    .map((g) => ({
+      key: g.key,
+      label: g.label,
+      count: countsByGroup[g.key] ?? 0,
+      href: `/posts/${g.key}`,
+    }))
+    .filter((it) => (typeof it.count === "number" ? it.count > 0 : true)),
+];
+
+const featuredPrimary = posts.find((p) => Boolean((p.data as any)?.featured)) ?? posts[0];
+const categoryItems = navItems.filter((it) => it.key !== "all");
+const previousPosts = featuredPrimary
+  ? posts.filter((p) => p.slug !== featuredPrimary.slug).slice(0, 12)
+  : posts.slice(0, 12);
+
+// Homepage copy comes from taxonomy (agent-owned), with safe fallbacks
+const hp = taxonomy.homepage ?? {
+  seoTitle: "Thoughtful buying guides, powered by real product signals",
+  seoDescription: taxonomy.brand.tagline,
+  trustTitle: "Why people trust this site",
+  trustCards: [
+    {
+      title: "High review thresholds",
+      body: "We only include products with strong ratings and substantial customer feedback.",
+    },
+    {
+      title: "No sponsored placements",
+      body: "Topics and products are selected algorithmically, not influenced by brands.",
+    },
+    {
+      title: "Updated weekly",
+      body: "Our pipeline refreshes continuously to stay aligned with seasonality and demand.",
+    },
+  ],
+  ctaTitle: "Stay sharp, spend smarter",
+  ctaBody: "Weekly curated buying guides. No spam.",
+  ctaInputPlaceholder: "Email address",
+  ctaButtonText: "Subscribe",
+};
+---
+
+<SiteLayout title={taxonomy.brand.name} description={hp.seoDescription} canonical="/">
+  <h1 class="sr-only">{taxonomy.brand.name}</h1>
+  <p class="sr-only">Independent product buying guides and recommendations</p>
+
+  <div class="max-w-6xl mx-auto px-6 pt-6">
+    <!-- CATEGORIES (compact) -->
+    {categoryItems.length ? (
+      <section>
+        <h2 class="text-base font-semibold text-gray-900">Categories</h2>
+
+        {/* Mobile: keep the richer image cards */}
+        <div class="mt-4 grid grid-cols-2 gap-3 sm:hidden">
+          {categoryItems.map((it) => (
+            <CategoryPlacecard
+              categoryKey={it.key}
+              label={it.label}
+              href={it.href}
+              count={it.count}
+            />
+          ))}
+        </div>
+
+        {/* Tablet/Desktop: compact chips (4 in a row) */}
+        <div class="mt-4 hidden grid-cols-4 gap-3 sm:grid">
+          {categoryItems.map((it) => (
+            <CategoryChip
+              categoryKey={it.key}
+              label={it.label}
+              href={it.href}
+              count={it.count}
+            />
+          ))}
+        </div>
+      </section>
+    ) : null}
+
+    <section class="mt-8">
+      {featuredPrimary ? (
+        <div class="mt-2">
+          <div class="flex items-baseline justify-between gap-6">
+            <h2 class="text-base font-semibold text-gray-900">All posts</h2>
+            <a class="text-sm font-semibold text-gray-900 hover:underline" href="/posts">
+              View all
+            </a>
+          </div>
+
+          <div class="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+            {/* Featured: full-width on mobile, normal card in desktop grid */}
+            <div class="col-span-2 lg:col-span-1">
+              <HomePostCard post={featuredPrimary} loading="eager" variant="top" featured={true} />
+            </div>
+
+            {previousPosts.map((post) => (
+              <HomePostCard post={post} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div class="mt-6 rounded-3xl border border-dashed border-gray-300 bg-white p-12">
+          <h1 class="text-2xl font-semibold text-gray-900">No guides yet</h1>
+          <p class="mt-3 text-sm text-gray-600">
+            Add a post in{" "}
+            <code class="rounded bg-gray-100 px-1.5 py-0.5">src/content/posts</code>.
+          </p>
+        </div>
+      )}
+    </section>
+  </div>
+</SiteLayout>

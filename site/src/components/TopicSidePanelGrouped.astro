@@ -1,0 +1,70 @@
+---
+import { prettyCategory } from "../lib/topics";
+import taxonomy from "../data/taxonomy.json";
+const { topics = [] } = Astro.props;
+
+const GROUPS = taxonomy.groups ?? [];
+
+const set = new Set(topics);
+const groups = GROUPS.map((g) => ({
+  title: g.title,
+  items: g.items.filter((x) => set.has(x)),
+})).filter((g) => g.items.length > 0);
+
+// Anything selected but not in GROUPS falls into “Other”
+const groupedItems = new Set(groups.flatMap((g) => g.items));
+const other = topics.filter((t) => !groupedItems.has(t));
+---
+
+<aside class="lg:sticky lg:top-6">
+  <div class="rounded-2xl border border-gray-200 bg-white p-5">
+    <div class="flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-gray-900">Topics</h2>
+      <a href="/posts" class="text-xs font-medium text-blue-600 hover:text-blue-700">View all</a>
+    </div>
+
+    <p class="mt-1 text-xs text-gray-500">Grouped for browsing</p>
+
+    <div class="mt-4 space-y-5">
+      {groups.map((g) => (
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            {g.title}
+          </div>
+          <div class="mt-2 space-y-2">
+            {g.items.map((t) => (
+              <a
+                href={`/posts?category=${t}`}
+                class="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-800 hover:bg-white hover:border-gray-300"
+              >
+                <span class="font-medium">{prettyCategory(t)}</span>
+                <span class="text-xs text-gray-400">→</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {other.length > 0 && (
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Other</div>
+          <div class="mt-2 space-y-2">
+            {other.map((t) => (
+              <a
+                href={`/posts?category=${t}`}
+                class="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-800 hover:bg-white hover:border-gray-300"
+              >
+                <span class="font-medium">{prettyCategory(t)}</span>
+                <span class="text-xs text-gray-400">→</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+
+    <div class="mt-5 rounded-xl bg-gray-50 p-3 text-xs text-gray-600">
+      Tip: reorder lines in <code class="rounded bg-white px-1.5 py-0.5">topic_selection.txt</code>.
+    </div>
+  </div>
+</aside>

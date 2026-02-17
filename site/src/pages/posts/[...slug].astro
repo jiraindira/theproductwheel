@@ -1,0 +1,824 @@
+---
+import { getCollection } from "astro:content";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import PostLayout from "../../layouts/PostLayout.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import { marked } from "marked";
+import { getTaxonomy } from "../../lib/taxonomy";
+import { normalizePostCategories } from "../../lib/normalizeCategories";
+import { extractIntroExcerptFromBody, isGenericDescription } from "../../lib/postExcerpt";
+import {
+  buildArticleJsonLd,
+  buildBreadcrumbList,
+  toAbsoluteUrl,
+} from "../../lib/structuredData";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+
+// Ensure Astro processes the markdown entry (content collections)
+const { Content } = await post.render();
+
+const { products = [], publishedAt, category, picks = [] } = post.data;
+const isGuide = Array.isArray(products) && products.length > 0;
+const typeLabel = isGuide ? "Buying guide" : "Thought piece";
+
+const taxonomy = await getTaxonomy();
+
+// -----------------------------
+// Discovery: related + next/prev
+// -----------------------------
+const allPosts = await getCollection("posts");
+allPosts.sort((a, b) => {
+  const ta = a.data.publishedAt instanceof Date ? a.data.publishedAt.getTime() : 0;
+  const tb = b.data.publishedAt instanceof Date ? b.data.publishedAt.getTime() : 0;
+  const t = tb - ta;
+  if (t !== 0) return t;
+  return b.slug.localeCompare(a.slug);
+});
+
+const currentIndex = allPosts.findIndex((p) => p.slug === post.slug);
+const newerPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+const olderPost = currentIndex >= 0 && currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+
+const currentCats = normalizePostCategories(post, taxonomy);
+
+const relatedPosts = allPosts
+  .filter((p) => p.slug !== post.slug)
+  .map((p) => {
+    const cats = normalizePostCategories(p, taxonomy);
+    const shared = cats.filter((c) => currentCats.includes(c)).length;
+    return { post: p, shared };
+  })
+  .filter((x) => x.shared > 0)
+  .sort((a, b) => {
+    if (b.shared !== a.shared) return b.shared - a.shared;
+    const ta = a.post.data.publishedAt instanceof Date ? a.post.data.publishedAt.getTime() : 0;
+    const tb = b.post.data.publishedAt instanceof Date ? b.post.data.publishedAt.getTime() : 0;
+    const t = tb - ta;
+    if (t !== 0) return t;
+    return b.post.slug.localeCompare(a.post.slug);
+  })
+  .slice(0, 3)
+  .map((x) => x.post);
+
+const moreGuides = (() => {
+  const seen = new Set();
+  const list = [];
+
+  const add = (kind, p) => {
+    if (!p) return;
+    if (seen.has(p.slug)) return;
+    seen.add(p.slug);
+    list.push({ kind, post: p });
+  };
+
+  add("Newer", newerPost);
+  add("Older", olderPost);
+
+  for (const rp of relatedPosts) {
+    add("Related", rp);
+  }
+
+  return list.slice(0, 4);
+})();
+
+function formatDateShort(d) {
+  try {
+    if (!d) return "";
+    return new Date(d).toLocaleDateString("en-GB", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+    });
+  } catch {
+    return "";
+  }
+}
+
+const baseUrl = (Astro.site ?? "http://localhost").toString();
+const siteName = taxonomy.brand.name;
+const siteUrl = toAbsoluteUrl(baseUrl, "/");
+const logoUrl = toAbsoluteUrl(baseUrl, "/brand/logo-icon.png");
+
+// SEO / sharing
+const canonical = `/posts/${post.slug}`;
+const ogImage = post.data.heroImage;
+
+const postsCrumbLabel = isGuide ? "Guides" : "Articles";
+
+const canonicalUrl = toAbsoluteUrl(baseUrl, canonical);
+const ogImageUrl = ogImage ? toAbsoluteUrl(baseUrl, ogImage) : undefined;
+
+const datePublishedIso =
+  post.data.publishedAt instanceof Date
+    ? post.data.publishedAt.toISOString()
+    : undefined;
+
+const breadcrumbItems = [
+  { name: siteName, url: siteUrl },
+  { name: postsCrumbLabel, url: toAbsoluteUrl(baseUrl, "/posts") },
+  ...(category
+    ? [
+        {
+          name: String(category),
+          url: toAbsoluteUrl(baseUrl, `/category/${String(category).trim().toLowerCase()}`),
+        },
+      ]
+    : []),
+  { name: String(post.data.title), url: canonicalUrl },
+];
+
+const breadcrumbJsonLd = buildBreadcrumbList(breadcrumbItems);
+const articleJsonLd = buildArticleJsonLd({
+  canonicalUrl,
+  headline: String(post.data.title),
+  description: undefined, // set below after we compute a better fallback
+  imageUrl: ogImageUrl,
+  datePublished: datePublishedIso,
+  dateModified: datePublishedIso,
+  siteName,
+  siteUrl,
+  logoUrl,
+});
+
+// Raw markdown body (no frontmatter)
+const rawBody = String(post.body ?? "");
+
+// Prefer a real excerpt when description is generic.
+const computedExcerpt = extractIntroExcerptFromBody(rawBody);
+const seoDescription = (() => {
+  const rawDesc = post?.data?.description ? String(post.data.description) : "";
+  if (rawDesc && !isGenericDescription(rawDesc)) return rawDesc;
+  // Slightly longer on detail pages
+  return computedExcerpt ? computedExcerpt.slice(0, 160).trim() : rawDesc;
+})();
+
+// Patch JSON-LD description with the final chosen value.
+articleJsonLd.description = seoDescription || undefined;
+
+const uiDescription = isGuide
+  ? seoDescription
+  : (post?.data?.dek
+      ? String(post.data.dek)
+      : post?.data?.description
+        ? String(post.data.description)
+        : "");
+
+// -----------------------------
+// Deterministic parsing helpers
+// -----------------------------
+function slugifyHeading(text) {
+  return String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[’']/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+function pickAnchorId(p) {
+  const base = slugifyHeading(p?.title);
+  const suffix = slugifyHeading(p?.pick_id);
+  if (base && suffix) return `${base}-${suffix}`;
+  return base || suffix || "";
+}
+
+// Find the "## The picks" section boundary
+function splitBeforePicks(md) {
+  const lines = String(md || "").split("\n");
+  let idx = -1;
+
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^##\s+(.+)\s*$/);
+    if (!m) continue;
+    if (m[1].trim().toLowerCase() === "the picks") {
+      idx = i;
+      break;
+    }
+  }
+
+  if (idx === -1) {
+    return { pre: md, picksSection: "" };
+  }
+
+  const pre = lines.slice(0, idx).join("\n").trim();
+  const picksSection = lines.slice(idx).join("\n").trim();
+  return { pre, picksSection };
+}
+
+/**
+ * Split "pre picks" markdown into:
+ *  - beforeHow: everything before "## How this list was chosen"
+ *  - howSection: that section (H2 + its content) until next H2 or end
+ *  - afterHow: everything after that section (still before picks)
+ */
+function splitHowChosenSection(md) {
+  const lines = String(md || "").split("\n");
+  const h2Re = /^\s*##\s+(.+?)\s*$/;
+
+  let start = -1;
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(h2Re);
+    if (!m) continue;
+    if (m[1].trim().toLowerCase() === "how this list was chosen") {
+      start = i;
+      break;
+    }
+  }
+
+  if (start === -1) {
+    return { beforeHow: md, howSection: "", afterHow: "" };
+  }
+
+  let end = lines.length;
+  for (let i = start + 1; i < lines.length; i++) {
+    const m = lines[i].match(h2Re);
+    if (m) {
+      end = i;
+      break;
+    }
+  }
+
+  const beforeHow = lines.slice(0, start).join("\n").trim();
+  const howSection = lines.slice(start, end).join("\n").trim();
+  const afterHow = lines.slice(end).join("\n").trim();
+  return { beforeHow, howSection, afterHow };
+}
+
+/**
+ * Convert the body of "How this list was chosen" into bullet points.
+ */
+function normalizeHowChosenToBullets(sectionMd) {
+  if (!sectionMd) return "";
+
+  const lines = sectionMd.split("\n");
+  if (!lines.length) return sectionMd;
+
+  // First line is usually the H2. We'll render the heading in the accordion summary instead.
+  const headingLine = lines[0];
+  const rest = lines.slice(1).join("\n").trim();
+
+  if (!rest) return sectionMd;
+
+  // Split into "paragraph blocks" by blank lines
+  const blocks = rest
+    .split(/\n\s*\n/g)
+    .map((b) => b.trim())
+    .filter(Boolean);
+
+  if (blocks.length <= 1) {
+    // Nothing to bullet-ize
+    return sectionMd;
+  }
+
+  const intro = blocks[0];
+
+  const items = blocks.slice(1).map((b) => {
+    const trimmed = b.trim();
+    if (/^[-*]\s+/.test(trimmed) || /^\d+\.\s+/.test(trimmed)) return trimmed;
+    const flat = trimmed.replace(/\n+/g, " ").replace(/\s+/g, " ").trim();
+    return `- ${flat}`;
+  });
+
+  // Drop the H2 to avoid duplicating the summary label.
+  // If the first line wasn't an H2 for some reason, keep it.
+  const hasH2 = /^\s*##\s+/.test(String(headingLine || ""));
+  const out = `${intro}\n\n${items.join("\n")}`.trim();
+  return hasH2 ? out : `${headingLine}\n\n${out}`.trim();
+}
+
+/**
+ * Remove a leading "## Intro" heading from markdown so the page can render
+ * the intro text without the literal "Intro" label.
+ */
+function stripLeadingIntroHeading(md) {
+  const lines = String(md || "").split("\n");
+  if (!lines.length) return "";
+
+  // Skip leading blanks
+  let i = 0;
+  while (i < lines.length && lines[i].trim() === "") i++;
+
+  // If the first non-empty line is "## Intro", drop it and following blank line(s)
+  if (/^##\s+intro\s*$/i.test(lines[i] ?? "")) {
+    i++;
+    while (i < lines.length && lines[i].trim() === "") i++;
+    return lines.slice(i).join("\n").trim();
+  }
+
+  return String(md || "").trim();
+}
+
+// Extract per-pick markdown blocks from the picks section using the contract:
+// <!-- pick_id: X -->
+// ### Title
+// <body...>
+function extractPickBodies(picksSectionMd) {
+  const lines = String(picksSectionMd || "").split("\n");
+
+  const pickIdRe = /^\s*<!--\s*pick_id:\s*([a-z0-9\-_:]+)\s*-->\s*$/i;
+  const h2Re = /^\s*##\s+(.+?)\s*$/;
+
+  // Trim section to just content inside "## The picks" until next H2
+  let start = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(h2Re);
+    if (m && m[1].trim().toLowerCase() === "the picks") {
+      start = i + 1;
+      break;
+    }
+  }
+
+  let end = lines.length;
+  for (let i = start; i < lines.length; i++) {
+    const m = lines[i].match(h2Re);
+    if (m) {
+      end = i;
+      break;
+    }
+  }
+
+  const slice = lines.slice(start, end);
+
+  const out = new Map(); // pick_id -> body markdown (excluding marker + H3 title)
+  let i = 0;
+
+  while (i < slice.length) {
+    const m = slice[i].match(pickIdRe);
+    if (!m) {
+      i++;
+      continue;
+    }
+
+    const pickId = m[1].trim();
+
+    // Expect next non-empty line to be H3, then body until next pick marker or end
+    let k = i + 1;
+    while (k < slice.length && slice[k].trim() === "") k++;
+
+    // Skip the H3 line if present
+    if (k < slice.length && slice[k].trim().startsWith("### ")) {
+      k++;
+    }
+
+    const bodyLines = [];
+    while (k < slice.length && !pickIdRe.test(slice[k])) {
+      bodyLines.push(slice[k]);
+      k++;
+    }
+
+    // Remove <hr /> lines (layout handles spacing)
+    const cleaned = bodyLines
+      .join("\n")
+      .replace(/^\s*<hr\s*\/>\s*$/gim, "")
+      .trim();
+
+    out.set(pickId, cleaned);
+    i = k;
+  }
+
+  return out;
+}
+
+const { pre: prePicksMarkdown, picksSection } = splitBeforePicks(rawBody);
+
+// Split out + normalize the How section
+const { beforeHow, howSection, afterHow } = splitHowChosenSection(prePicksMarkdown);
+const howSectionNormalized = normalizeHowChosenToBullets(howSection);
+
+const introMarkdown = stripLeadingIntroHeading(beforeHow);
+
+// Markdown -> HTML (server-side)
+const introHtml = introMarkdown ? marked.parse(introMarkdown) : "";
+const howHtml = howSectionNormalized ? marked.parse(howSectionNormalized) : "";
+const afterHowHtml = afterHow ? marked.parse(afterHow) : "";
+
+function mdToHtml(md) {
+  return md ? marked.parse(md) : "";
+}
+
+/**
+ * ✅ NEW SOURCE OF TRUTH:
+ * Picks now live in frontmatter as structured data: post.data.picks[]
+ * We map pick_id -> body markdown.
+ *
+ * Back-compat:
+ * If picks[] is empty, fall back to parsing "## The picks" from the markdown body.
+ */
+let pickBodyById = new Map();
+if (Array.isArray(picks) && picks.length > 0) {
+  pickBodyById = new Map(
+    picks
+      .filter((x) => x && typeof x.pick_id === "string")
+      .map((x) => [x.pick_id, String(x.body ?? "").trim()])
+  );
+} else {
+  pickBodyById = extractPickBodies(picksSection);
+}
+---
+
+<SiteLayout
+  title={post.data.title}
+  description={seoDescription}
+  canonical={canonical}
+  ogImage={ogImage}
+  ogType="article"
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  </Fragment>
+
+  <PostLayout
+    title={post.data.title}
+    description={uiDescription}
+    publishedAt={publishedAt}
+    category={category}
+    audience={post.data.audience}
+    heroImage={post.data.heroImage}
+    heroAlt={post.data.heroAlt}
+    imageCreditName={post.data.imageCreditName}
+    imageCreditUrl={post.data.imageCreditUrl}
+    readingTime={null}
+    toc={[]}
+    introHtml={isGuide ? introHtml : ""}
+    hideSidebar={!isGuide}
+    typeLabel={typeLabel}
+    dekVariant={isGuide ? "narrow" : "wide"}
+  >
+    {isGuide ? (
+      <Fragment>
+        <!-- ✅ How chosen accordion (closed by default) -->
+        {howHtml ? (
+          <details class="how-accordion">
+            <summary class="how-summary">How this list was chosen</summary>
+            <div class="how-body">
+              <div class="how-prose prose" set:html={howHtml} />
+            </div>
+          </details>
+        ) : null}
+
+        <!-- Any other sections after How (still before picks) -->
+        {afterHowHtml ? <div class="prose" set:html={afterHowHtml} /> : null}
+
+        <!-- Picks -->
+        <section class="picks" aria-label="The picks">
+          <h2 id="the-picks">The picks</h2>
+
+          {products.map((p) => {
+            const pickId = p.pick_id;
+            const bodyMd = pickBodyById.get(pickId) ?? "";
+            const bodyHtml = mdToHtml(bodyMd);
+
+            const anchorId = pickAnchorId(p);
+
+            return (
+              <section class="pick-block">
+                <h3 id={anchorId}>{p.title}</h3>
+
+                <div class="pick-card-wrap">
+                  <ProductCard
+                    title={p.title}
+                    rating={p.rating}
+                    reviews_count={p.reviews_count}
+                    url={p.url}
+                    description={p.description}
+                    image={p.image}
+                    bodyHtml={bodyHtml}
+                  />
+                </div>
+              </section>
+            );
+          })}
+        </section>
+      </Fragment>
+    ) : (
+      <div class="prose">
+        <Content />
+      </div>
+    )}
+
+    <div slot="sidebar">
+      {isGuide ? (
+        <Fragment>
+          <div class="side-stack">
+            <div class="sidecard-lite">
+              <div class="side-title">Quick picks</div>
+
+              <ol class="quick-list" aria-label="Quick picks list">
+                {products.map((p, idx) => {
+                  const id = pickAnchorId(p);
+                  return (
+                    <li class="quick-item">
+                      <a href={id ? `#${id}` : "#the-picks"} class="quick-link" title={p.title}>
+                        <span class="quick-num">{idx + 1}.</span>
+                        <span class="quick-title">{p.title}</span>
+                      </a>
+
+                      {(typeof p.rating === "number" || typeof p.reviews_count === "number") && (
+                        <div class="quick-meta">
+                          {typeof p.rating === "number" ? <span>{p.rating.toFixed(1)}★</span> : null}
+                          {typeof p.reviews_count === "number" ? (
+                            <span>
+                              {typeof p.rating === "number" ? " · " : ""}
+                              {p.reviews_count.toLocaleString()} reviews
+                            </span>
+                          ) : null}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+
+              <a href="#the-picks" class="jump-link">Jump to picks section →</a>
+            </div>
+          </div>
+
+          <style>
+            .side-stack { display: grid; gap: 12px; }
+
+            @media (max-width: 1023px) {
+              .side-stack {
+                display: none;
+              }
+            }
+
+            .sidecard-lite {
+              background: rgba(255, 255, 255, 0.95);
+              border: 1px solid rgba(17, 24, 39, 0.08);
+              border-radius: 18px;
+              padding: 16px;
+            }
+
+            .side-title {
+              font-size: 13px;
+              font-weight: 800;
+              color: rgba(17, 24, 39, 0.9);
+              letter-spacing: -0.01em;
+            }
+
+            .quick-list {
+              margin: 12px 0 0;
+              padding: 0;
+              list-style: none;
+              display: grid;
+              gap: 10px;
+              font-size: 13px;
+              max-height: 360px;
+              overflow: auto;
+              padding-right: 6px;
+              scrollbar-gutter: stable;
+            }
+
+            .quick-item {
+              padding: 10px 10px;
+              border-radius: 14px;
+              border: 1px solid rgba(17, 24, 39, 0.06);
+              background: rgba(17, 24, 39, 0.02);
+            }
+
+            .quick-link {
+              text-decoration: none;
+              color: rgba(17, 24, 39, 0.88);
+              font-weight: 700;
+              line-height: 1.25;
+              display: grid;
+              grid-template-columns: auto 1fr;
+              gap: 6px;
+              align-items: baseline;
+            }
+
+            .quick-link:hover {
+              color: rgb(37, 99, 235);
+              text-decoration: underline;
+              text-underline-offset: 3px;
+            }
+
+            .quick-num { color: rgba(55, 65, 81, 0.65); font-weight: 800; }
+
+            .quick-title {
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+            }
+
+            .quick-meta { margin-top: 6px; color: rgba(55, 65, 81, 0.7); font-size: 12px; }
+
+            .jump-link {
+              display: inline-block;
+              margin-top: 12px;
+              font-size: 13px;
+              font-weight: 750;
+              color: rgb(37, 99, 235);
+              text-decoration: none;
+            }
+            .jump-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+          </style>
+        </Fragment>
+      ) : null}
+    </div>
+
+    {moreGuides.length ? (
+      <nav class="np" aria-label="More guides">
+        <div class="np-head">More guides</div>
+
+        <div class="np-grid">
+          {moreGuides.map(({ kind, post: p }) => (
+            <a class="np-card" href={`/posts/${p.slug}`}>
+              <div class="np-kicker">{kind} guide</div>
+              <div class="np-title">{p.data.title}</div>
+              <div class="np-meta">{formatDateShort(p.data.publishedAt)}</div>
+            </a>
+          ))}
+        </div>
+      </nav>
+    ) : null}
+
+    <style>
+      .picks {
+        max-width: 72ch;
+      }
+
+      .pick-block {
+        margin-top: 18px;
+      }
+
+      .pick-card-wrap {
+        margin: 8px 0 10px;
+        max-width: 72ch;
+      }
+
+      .picks > h2 {
+        margin-top: 34px;
+        margin-bottom: 14px;
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: #111827;
+      }
+
+      .picks h3 {
+        margin-top: 0;
+        margin-bottom: 6px;
+        font-size: 20px;
+        font-weight: 750;
+        letter-spacing: -0.01em;
+        color: #111827;
+      }
+
+      .pick-block + .pick-block {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(17, 24, 39, 0.08);
+      }
+
+      /* -----------------------------
+         How chosen callout styling
+         ----------------------------- */
+      .how-accordion {
+        max-width: 72ch;
+        margin: 18px 0 18px;
+        border-radius: 16px;
+        border: 1px solid rgba(17, 24, 39, 0.08);
+        background: rgba(17, 24, 39, 0.03);
+        overflow: hidden;
+      }
+
+      .how-summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 14px 16px;
+        font-size: 14px;
+        font-weight: 850;
+        letter-spacing: -0.01em;
+        color: rgba(17, 24, 39, 0.92);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .how-summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .how-summary::after {
+        content: "+";
+        font-size: 18px;
+        line-height: 1;
+        opacity: 0.75;
+      }
+
+      details[open] > .how-summary::after {
+        content: "–";
+      }
+
+      .how-body {
+        padding: 0 16px 14px;
+      }
+
+      /* If an H2 slips through for any reason, don't show it (summary is the heading). */
+      .how-prose :global(h2) { display: none; }
+
+      /* Bullet points: clear + roomy */
+      .how-prose :global(ul) {
+        margin: 12px 0 0 18px;
+        padding-left: 18px;
+
+        /* ✅ force bullets back on */
+        list-style: disc !important;
+        list-style-position: outside;
+      }
+
+      .how-prose :global(li) {
+        margin: 10px 0;
+      }
+
+      .how-prose :global(li::marker) {
+        color: rgba(55, 65, 81, 0.75);
+      }
+
+      /* General prose defaults (so markdown renders nicely) */
+      .prose :global(p) { margin: 12px 0; }
+      .prose :global(ul), .prose :global(ol) { margin: 14px 0 14px 20px; padding-left: 18px; }
+      .prose :global(li) { margin: 8px 0; }
+      .prose :global(a) { text-decoration: underline; text-underline-offset: 3px; }
+
+      /* -----------------------------
+         Next/prev + related
+         ----------------------------- */
+      .np {
+        max-width: 72ch;
+        margin-top: 28px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(17, 24, 39, 0.08);
+      }
+
+      .np-head {
+        font-size: 13px;
+        font-weight: 850;
+        color: rgba(17, 24, 39, 0.9);
+        letter-spacing: -0.01em;
+      }
+
+      .np-grid {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      @media (min-width: 640px) {
+        .np-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .np-card {
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid rgba(17, 24, 39, 0.10);
+        background: rgba(17, 24, 39, 0.02);
+        border-radius: 16px;
+        padding: 14px;
+      }
+
+      .np-card:hover {
+        border-color: rgba(37, 99, 235, 0.28);
+        background: rgba(37, 99, 235, 0.04);
+      }
+
+      .np-kicker {
+        font-size: 12px;
+        font-weight: 800;
+        color: rgba(55, 65, 81, 0.75);
+      }
+
+      .np-title {
+        margin-top: 6px;
+        font-size: 14px;
+        font-weight: 850;
+        letter-spacing: -0.01em;
+        color: rgba(17, 24, 39, 0.92);
+        line-height: 1.25;
+      }
+
+      .np-meta {
+        margin-top: 6px;
+        font-size: 12px;
+        color: rgba(55, 65, 81, 0.7);
+      }
+    </style>
+  </PostLayout>
+</SiteLayout>

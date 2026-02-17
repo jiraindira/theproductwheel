@@ -1,0 +1,314 @@
+---
+// src/components/ProductCard.astro
+import { stripRedundantLeadingTitleBlock } from "../lib/pickBodySanitizer.mjs";
+const { title, rating, reviews_count, url, description, bodyHtml, image } = Astro.props;
+
+/**
+ * PM NOTE:
+ * "rating" and "reviews_count" come from frontmatter products[].
+ * They might arrive as strings (depending on parsing), so we normalize safely.
+ */
+function safeNumber(n) {
+  const x = Number(n);
+  return Number.isFinite(x) ? x : null;
+}
+
+const r = safeNumber(rating);
+const rc = safeNumber(reviews_count);
+
+/**
+ * PM NOTE:
+ * Stars fill is purely visual (percentage width over 5 stars).
+ * Clamp to [0,100] so bad input doesn't overflow UI.
+ */
+const ratingPct = r != null ? Math.max(0, Math.min(100, (r / 5) * 100)) : 0;
+
+const hasUrl = typeof url === "string" && url.trim().length > 0;
+
+const hasImage = typeof image === "string" && image.trim().length > 0;
+
+/**
+ * PM NOTE (CRITICAL CONTRACT):
+ * bodyHtml is the “real pick write-up”, rendered upstream in the page route:
+ *   markdown -> HTML via marked.parse(...)
+ *
+ * This is exactly what fixed the layout: we keep markdown parsing OUT of the card.
+ */
+const hasBodyHtml = typeof bodyHtml === "string" && bodyHtml.trim().length > 0;
+
+/**
+ * PM NOTE:
+ * description is optional fallback copy stored in frontmatter.
+ * Our precedence is: bodyHtml (author markdown) > description (frontmatter) > nothing.
+ */
+const hasDesc = typeof description === "string" && description.trim().length > 0;
+
+function normalizeText(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+const titleNorm = normalizeText(title);
+const descNorm = normalizeText(description);
+const isRedundantDesc =
+  !hasDesc ||
+  descNorm.length === 0 ||
+  descNorm === titleNorm ||
+  (descNorm.length >= 6 && titleNorm.includes(descNorm)) ||
+  (titleNorm.length >= 6 && descNorm.includes(titleNorm)) ||
+  descNorm.length < 12;
+
+const showDesc = hasDesc && !isRedundantDesc;
+
+const cleanedBodyHtml = hasBodyHtml
+  ? stripRedundantLeadingTitleBlock(bodyHtml, title)
+  : "";
+---
+
+<article class="pick">
+  <!--
+    PM NOTE:
+    Title is rendered by the page ([...slug].astro) as the single canonical H3.
+    Keeping it out of the visible card prevents duplication and keeps semantics clean.
+  -->
+  <p class="sr-only">{title}</p>
+
+  {(r != null || rc != null) && (
+    <div
+      class="pick-rating"
+      aria-label={r != null ? `Rated ${r.toFixed(1)} out of 5` : "Rating"}
+    >
+      {r != null && (
+        <>
+          <span class="stars" aria-hidden="true">
+            <span class="stars-base">★★★★★</span>
+            <span class="stars-fill" style={`width:${ratingPct}%`}>★★★★★</span>
+          </span>
+          <span class="rating-num">{r.toFixed(1)}</span>
+        </>
+      )}
+
+      {rc != null && (
+        <span class="reviews">
+          {r != null ? <span class="dot">·</span> : null}
+          {rc.toLocaleString()} reviews
+        </span>
+      )}
+    </div>
+  )}
+
+  <div class="content-row">
+    {hasImage ? (
+      <div class="thumb" aria-hidden="true">
+        <img
+          src={image}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          width="96"
+          height="96"
+        />
+      </div>
+    ) : null}
+
+    <div class="desc-wrap">
+      {hasBodyHtml ? (
+        <div class="pick-prose" set:html={cleanedBodyHtml} />
+      ) : showDesc ? (
+        <p class="desc">{description}</p>
+      ) : null}
+    </div>
+
+    <div class="cta">
+      {hasUrl ? (
+        <a
+          href={url}
+          rel="sponsored nofollow noopener"
+          target="_blank"
+          class="btn"
+        >
+          Check price →
+        </a>
+      ) : (
+        <span class="btn btn-disabled" aria-disabled="true">
+          Link coming soon
+        </span>
+      )}
+    </div>
+  </div>
+</article>
+
+<style>
+  .pick {
+    padding: 8px 0 10px; /* ✅ tighter vertical rhythm between picks */
+  }
+
+  .pick-rating {
+    margin-top: 2px; /* ✅ slightly tighter */
+    font-size: 14px;
+    color: rgba(55, 65, 81, 0.85);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .stars {
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+    letter-spacing: 2px;
+    font-size: 16px;
+  }
+
+  .stars-base {
+    color: rgba(17, 24, 39, 0.18);
+  }
+
+  .stars-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: rgb(37, 99, 235);
+  }
+
+  .rating-num {
+    font-weight: 800;
+    color: rgba(17, 24, 39, 0.92);
+  }
+
+  .dot {
+    margin: 0 4px;
+    opacity: 0.55;
+  }
+
+  .content-row {
+    margin-top: 8px; /* ✅ tighter */
+    display: flex;
+    align-items: flex-start;
+    gap: 18px; /* ✅ slightly tighter */
+  }
+
+  .thumb {
+    flex: 0 0 auto;
+    width: 96px;
+  }
+
+  .thumb img {
+    display: block;
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    border-radius: 14px;
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    background: rgba(17, 24, 39, 0.04);
+  }
+
+  .desc-wrap {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .cta {
+    flex: 0 0 auto;
+    display: grid;
+    align-content: start;
+    justify-items: end;
+  }
+
+  @media (max-width: 520px) {
+    .content-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .thumb {
+      width: auto;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: auto;
+      max-width: 220px;
+    }
+
+    .cta {
+      justify-items: start;
+      margin-top: 8px; /* ✅ tighter */
+    }
+  }
+
+  .desc {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.8;
+    color: rgba(17, 24, 39, 0.88);
+    max-width: 72ch;
+  }
+
+  .pick-prose :global(p) {
+    margin: 0 0 6px; /* ✅ reduced paragraph spacing (biggest win) */
+    font-size: 18px;
+    line-height: 1.8;
+    color: rgba(17, 24, 39, 0.88);
+    max-width: 72ch;
+  }
+
+  .pick-prose :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .pick-prose :global(ul),
+  .pick-prose :global(ol) {
+    margin: 10px 0 10px 20px; /* ✅ slightly tighter */
+    padding-left: 18px;
+  }
+
+  .pick-prose :global(li) {
+    margin: 6px 0; /* ✅ slightly tighter */
+  }
+
+  .pick-prose :global(a) {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+    background: rgb(37, 99, 235);
+    color: #fff;
+  }
+
+  .btn:hover {
+    background: rgb(29, 78, 216);
+  }
+
+  .btn-disabled {
+    background: rgba(17, 24, 39, 0.06);
+    color: rgba(55, 65, 81, 0.65);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

@@ -1,0 +1,95 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import { getPostHeroImage } from "../lib/postImages";
+
+const { post, taxonomy } = Astro.props as {
+  post: CollectionEntry<"posts">;
+  taxonomy: any;
+};
+
+const FALLBACK_HERO = "/images/placeholder-hero.webp";
+
+function formatDate(d: Date) {
+  try {
+    return new Date(d).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return "";
+  }
+}
+
+// Prefer a homepage crop if present
+const heroImageRaw = (() => {
+  const preferred =
+    typeof post?.data?.heroImageHome === "string" && post.data.heroImageHome.trim().length > 0
+      ? post.data.heroImageHome.trim()
+      : null;
+
+  const fallback =
+    typeof post?.data?.heroImage === "string" && post.data.heroImage.trim().length > 0
+      ? post.data.heroImage.trim()
+      : null;
+
+  return preferred || fallback || FALLBACK_HERO;
+})();
+
+const isPublicHero = heroImageRaw.startsWith("/");
+const heroAsset = !isPublicHero ? getPostHeroImage(heroImageRaw) : null;
+
+const safeHeroAlt =
+  typeof post?.data?.heroAlt === "string" && post.data.heroAlt.trim().length > 0
+    ? post.data.heroAlt.trim()
+    : post?.data?.title ?? "";
+
+// Featured card: editorial layout with consistent text readability (no overlay)
+const WRAP_CLASS =
+  "group block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2";
+const CARD_CLASS =
+  "flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:border-gray-300";
+const HERO_WRAP_CLASS = "relative w-full flex-1 overflow-hidden bg-gray-100 min-h-[260px] sm:min-h-[320px]";
+// Full-bleed image fill (cropping is expected if aspect ratios differ).
+const HERO_IMG_CLASS = "absolute inset-0 h-full w-full object-cover";
+---
+
+<a
+  href={`/posts/${post.slug}`}
+  class={WRAP_CLASS}
+  aria-label={post.data.title}
+>
+  <div class={CARD_CLASS}>
+    <div class={HERO_WRAP_CLASS}>
+      {isPublicHero ? (
+        <img src={heroImageRaw} alt={safeHeroAlt} class={HERO_IMG_CLASS} loading="eager" decoding="async" />
+      ) : heroAsset ? (
+        <Image
+          src={heroAsset}
+          alt={safeHeroAlt}
+          width={heroAsset.width}
+          height={heroAsset.height}
+          class={HERO_IMG_CLASS}
+          sizes="(min-width: 1024px) 760px, 100vw"
+          loading="eager"
+          decoding="async"
+        />
+      ) : null}
+    </div>
+
+    <div class="p-5">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center rounded-full bg-gray-900 px-2.5 py-1 text-[11px] font-semibold text-white">
+          Featured
+        </span>
+        <span class="text-[11px] font-semibold tracking-wide text-gray-600">
+          {formatDate(post.data.publishedAt)}
+        </span>
+      </div>
+      <h2 class="mt-1 text-lg font-semibold leading-snug tracking-tight text-gray-900 sm:text-xl lg:text-2xl group-hover:text-gray-950">
+        {post.data.title}
+      </h2>
+    </div>
+  </div>
+</a>

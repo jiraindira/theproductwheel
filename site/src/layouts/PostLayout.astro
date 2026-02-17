@@ -1,0 +1,468 @@
+---
+import { Image } from "astro:assets";
+import { getPostHeroImage } from "../lib/postImages";
+
+// ✅ Restore props destructuring (was removed, causing `heroImage is not defined`)
+const {
+  title,
+  description,
+  publishedAt,
+
+  // ✅ Back-compat: old single category
+  category,
+
+  // ✅ New: multi category support
+  categories,
+
+  audience,
+  heroImage,
+  heroAlt,
+  imageCreditName,
+  imageCreditUrl,
+  readingTime,
+  toc = [],
+  introHtml,
+  hideSidebar = false,
+  typeLabel,
+  dekVariant = "narrow",
+} = Astro.props;
+
+// Detect whether heroImage is a public URL (/images/...) or an asset path
+const isPublicHero = typeof heroImage === "string" && heroImage.startsWith("/");
+
+// Only resolve asset images via astro:assets
+const heroAsset = !isPublicHero && heroImage ? getPostHeroImage(heroImage) : null;
+
+const safeHeroAlt = heroAlt ?? title;
+
+const dateLabel =
+  publishedAt instanceof Date
+    ? publishedAt.toLocaleDateString("en-GB", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : publishedAt
+      ? String(publishedAt)
+      : "—";
+
+// On Vercel, don't fs.existsSync() the public directory at runtime.
+// Render the URL and rely on browser onerror fallback.
+const resolvedHeroImage = isPublicHero
+  ? (typeof heroImage === "string" && heroImage ? heroImage : "/images/placeholder-hero.webp")
+  : null;
+
+const showHero = Boolean((isPublicHero && resolvedHeroImage) || heroAsset);
+const showToc = Array.isArray(toc) && toc.length > 0;
+
+/**
+ * Category normalization:
+ * - Prefer categories[] (multi)
+ * - Fall back to legacy category (single)
+ * - Normalize values to lowercase IDs (safe for routing)
+ */
+function normalizeCategoryId(x) {
+  return String(x || "").trim().toLowerCase();
+}
+
+function humanizeCategory(id) {
+  // Simple default label (taxonomy-driven labels can replace this later)
+  return String(id || "")
+    .replaceAll("_", " ")
+    .replaceAll("-", " ")
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+const categoryIdsRaw = Array.isArray(categories) ? categories : category ? [category] : [];
+const categoryIds = categoryIdsRaw
+  .map(normalizeCategoryId)
+  .filter(Boolean);
+
+// De-dupe while preserving order
+const seen = new Set();
+const categoriesUnique = categoryIds.filter((c) => {
+  if (seen.has(c)) return false;
+  seen.add(c);
+  return true;
+});
+---
+
+<section class="post-root">
+  {showHero && (
+    <div class="hero-bleed">
+      <figure class="hero">
+        <div class="hero-frame">
+          {isPublicHero ? (
+            <img
+              src={resolvedHeroImage ?? "/images/placeholder-hero.webp"}
+              alt={safeHeroAlt}
+              width="1600"
+              height="900"
+              loading="eager"
+              decoding="async"
+              class="hero-img"
+              onerror="this.onerror=null;this.src='/images/placeholder-hero.webp';"
+            />
+          ) : (
+            <Image
+              src={heroAsset}
+              alt={safeHeroAlt}
+              width={heroAsset.width}
+              height={heroAsset.height}
+              class="hero-img"
+              sizes="100vw"
+              loading="eager"
+              decoding="async"
+            />
+          )}
+        </div>
+      </figure>
+    </div>
+  )}
+
+  <div class="post-shell">
+    <header class="post-header">
+      {(imageCreditName || imageCreditUrl) && (
+        <div class="hero-credit hero-credit-contained">
+          Image credit:{" "}
+          {imageCreditUrl ? (
+            <a href={imageCreditUrl} class="hero-credit-link">
+              {imageCreditName ?? "Source"}
+            </a>
+          ) : (
+            <span>{imageCreditName}</span>
+          )}
+        </div>
+      )}
+
+      <div class="post-meta">
+        {typeLabel ? (
+          <span class="post-type">
+            {typeLabel}
+          </span>
+        ) : null}
+
+        <span class="post-date">{dateLabel}</span>
+
+        {categoriesUnique.length > 0 ? <span class="post-dot">•</span> : null}
+
+        {categoriesUnique.length > 0 ? (
+          <span class="post-cats">
+            {categoriesUnique.map((c, idx) => (
+              <>
+                <a class="post-cat" href={`/category/${c}`}>
+                  {humanizeCategory(c)}
+                </a>
+                {idx < categoriesUnique.length - 1 ? (
+                  <span class="post-cat-sep">,</span>
+                ) : null}
+              </>
+            ))}
+          </span>
+        ) : null}
+
+        {readingTime ? <span class="post-dot">•</span> : null}
+        {readingTime ? <span class="post-rt">{readingTime} min read</span> : null}
+      </div>
+
+      <h1 class="post-title">{title}</h1>
+
+      {introHtml ? (
+        <div class="post-intro prose" set:html={introHtml} />
+      ) : description ? (
+        <p class={`post-desc${dekVariant === "wide" ? " post-desc--wide" : ""}`}>{description}</p>
+      ) : null}
+    </header>
+
+    <div class={`post-grid${hideSidebar ? " post-grid--no-aside" : ""}`}>
+    <main class="post-main">
+      <div class="post-article">
+        <div class="prose-premium">
+          <!-- All article + pick rendering happens in the page -->
+          <slot />
+        </div>
+      </div>
+    </main>
+
+    {!hideSidebar ? (
+      <aside class="post-aside">
+        <slot name="sidebar">
+          <div class="sidecard">
+            <div class="sidehead">On this page</div>
+
+            {showToc ? (
+              <nav class="toc">
+                <ol class="toc-list">
+                  {toc.map((item) => (
+                    <li class="toc-item">
+                      <a class="toc-link" href={`#${item.id}`}>
+                        {item.text}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            ) : (
+              <p class="toc-empty">No table of contents is available for this page.</p>
+            )}
+
+            <div class="side-actions">
+              <a href="#the-picks" class="side-btn">Jump to picks</a>
+              <p class="side-tip">
+                Tip: skim the picks first, then circle back to “How this list was chosen”
+                if you want the logic behind the list.
+              </p>
+            </div>
+          </div>
+        </slot>
+      </aside>
+    ) : null}
+    </div>
+  </div>
+</section>
+
+<style>
+  .post-root {
+    width: 100%;
+  }
+
+  .post-shell {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 18px 24px 64px;
+  }
+
+  .post-header {
+    padding: 18px 0 0;
+  }
+
+  .post-meta {
+    margin-top: 0;
+    font-size: 12px;
+    color: rgba(55, 65, 81, 0.85);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .post-type {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(17, 24, 39, 0.06);
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    color: rgba(17, 24, 39, 0.82);
+    font-weight: 750;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+
+  .post-dot {
+    opacity: 0.55;
+  }
+
+  .post-cats {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: baseline;
+  }
+
+  .post-cat {
+    color: rgba(17, 24, 39, 0.82);
+    text-decoration: none;
+    font-weight: 750;
+  }
+
+  .post-cat:hover {
+    color: rgb(37, 99, 235);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .post-cat-sep {
+    opacity: 0.55;
+    margin-right: 4px;
+  }
+
+  .post-title {
+    margin-top: 12px;
+    font-size: clamp(30px, 3.4vw, 52px);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    font-weight: 650;
+  }
+
+  .post-desc {
+    margin-top: 12px;
+    font-size: 17px;
+    line-height: 1.55;
+    max-width: none;
+  }
+
+  .post-desc--wide {
+    max-width: none;
+    font-size: 19px;
+    line-height: 1.6;
+    color: rgba(17, 24, 39, 0.78);
+    letter-spacing: -0.01em;
+  }
+
+  .post-intro {
+    margin-top: 12px;
+    max-width: none;
+    font-size: 17px;
+    line-height: 1.65;
+    color: rgba(17, 24, 39, 0.78);
+  }
+
+  .post-intro :global(h2),
+  .post-intro :global(h3) {
+    display: none;
+  }
+
+  .post-intro :global(p) {
+    margin: 0.65rem 0;
+  }
+
+  .post-intro :global(p:first-child) {
+    margin-top: 0;
+  }
+
+  .post-grid {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .post-grid--no-aside {
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 1024px) {
+    .post-grid {
+      grid-template-columns: minmax(0, 1fr) 340px;
+    }
+
+    .post-grid--no-aside {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .post-article {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .prose-premium {
+    max-width: none;
+    font-size: 16.5px;
+    line-height: 1.72;
+  }
+
+  .prose-premium :global(.prose > :first-child) {
+    margin-top: 0;
+  }
+
+  .prose-premium :global(.prose h2) {
+    margin: 20px 0 10px;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: rgba(17, 24, 39, 0.95);
+  }
+
+  .prose-premium :global(.prose h3) {
+    margin: 18px 0 8px;
+    font-size: 18px;
+    font-weight: 850;
+    letter-spacing: -0.01em;
+    color: rgba(17, 24, 39, 0.95);
+  }
+
+  /* ✅ Hero */
+  .hero {
+    margin: 0;
+  }
+
+  .hero-bleed {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  /* Desktop: don't full-bleed the hero; keep it within the page container. */
+  @media (min-width: 768px) {
+    .hero-bleed {
+      width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+  }
+
+  .hero-frame {
+    position: relative;
+    border-radius: 0;
+    overflow: hidden;
+    border: 0;
+    background: rgba(17, 24, 39, 0.04);
+
+    line-height: 0;
+
+    width: 100%;
+    /* True 16:9 hero, with a sensible cap so it doesn't dominate desktop. */
+    height: clamp(220px, 56.25vw, 420px);
+
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .hero-frame {
+      border-radius: 24px;
+      border: 1px solid rgba(229, 231, 235, 1);
+      background: rgba(17, 24, 39, 0.03);
+    }
+  }
+
+  .hero-img {
+    width: 100%;
+    height: 100%;
+    /*
+      Fill the hero frame.
+      Our hero images are generated at 16:9, matching the frame.
+      If an older/legacy image has a different ratio, it may crop slightly.
+    */
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .hero-credit {
+    margin-top: 8px;
+    font-size: 12px;
+    color: rgba(55, 65, 81, 0.75);
+  }
+
+  .hero-credit-contained {
+    margin-top: 10px;
+  }
+
+  .hero-credit-link {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    color: inherit;
+  }
+
+  .hero-credit-link:hover {
+    color: rgba(17, 24, 39, 0.9);
+  }
+</style>
