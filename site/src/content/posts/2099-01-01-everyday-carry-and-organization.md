@@ -5,7 +5,7 @@ heroImageCard: "/images/posts/2099-01-01-everyday-carry-and-organization/hero_ca
 heroImageSource: "/images/posts/2099-01-01-everyday-carry-and-organization/hero_source.webp"
 heroAlt: "Everyday carry and organization hero image"
 title: Everyday carry and organization
-description: "tech \u2014 product_recommendation"
+description: tech — product_recommendation
 publishedAt: '2099-01-01T00:00:00Z'
 categories:
 - tech
