@@ -65,8 +65,8 @@ const posts = defineCollection({
           url: z.union([z.string().url(), z.literal("")]).default(""),
 
           price: z.string().optional(),
-          rating: z.number().optional(),
-          reviews_count: z.number().optional(),
+          rating: z.number().nullable().optional(),
+          reviews_count: z.number().nullable().optional(),
           description: z.string().optional(),
 
           /**
