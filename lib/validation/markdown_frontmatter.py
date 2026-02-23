@@ -49,5 +49,10 @@ def rebuild_markdown_with_frontmatter(frontmatter: Dict[str, Any], body: str) ->
     """
     Rebuild markdown with YAML frontmatter. Uses safe_dump with stable formatting.
     """
-    fm_text = yaml.safe_dump(frontmatter, sort_keys=False, allow_unicode=True).strip()
+    fm_text = yaml.safe_dump(
+        frontmatter,
+        sort_keys=False,
+        allow_unicode=True,
+        width=10_000,
+    ).strip()
     return f"---\n{fm_text}\n---\n\n{body.lstrip()}"
