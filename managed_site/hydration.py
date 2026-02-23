@@ -209,19 +209,8 @@ def hydrate_blog_post_from_package(
     )
 
     if should_regen:
-        # Lazy-import OpenAI deps only if actually needed.
-        from agents.image_generation_agent import ImageGenerationAgent
-        from integrations.openai_adapters import OpenAIImageGenerator, OpenAIJsonLLM
+        # Lazy-import only if actually needed.
         from pipeline.image_step import generate_hero_image
-
-        llm = OpenAIJsonLLM()
-        img = OpenAIImageGenerator()
-        agent = ImageGenerationAgent(
-            llm=llm,
-            image_gen=img,
-            public_images_dir=str(repo_root / "site" / "public" / "images"),
-            posts_subdir="posts",
-        )
 
         # Minimal inputs for prompt quality; safe fallbacks.
         fm = _extract_frontmatter(post_path.read_text(encoding="utf-8"))
@@ -250,13 +239,13 @@ def hydrate_blog_post_from_package(
             placeholder_url=placeholder_url,
             regen_fn=generate_hero_image,
             regen_kwargs={
-                "agent": agent,
                 "slug": post_slug,
                 "category": category,
                 "title": title,
                 "intro": "",
                 "picks": pick_snippets,
                 "alternatives": None,
+                "public_dir": public_dir,
             },
         )
     else:
